@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>813</width>
-    <height>857</height>
+    <width>929</width>
+    <height>912</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,204 +16,463 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QWidget" name="widget_60" native="true">
+     <widget class="QWidget" name="board" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0">
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="1" column="7">
-          <widget class="QWidget" name="widget_40" native="true"/>
-         </item>
-         <item row="4" column="1">
-          <widget class="QWidget" name="widget_10" native="true"/>
-         </item>
-         <item row="2" column="7">
-          <widget class="QWidget" name="widget_41" native="true"/>
-         </item>
-         <item row="3" column="7">
-          <widget class="QWidget" name="widget_77" native="true"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_56" native="true"/>
-         </item>
-         <item row="4" column="6">
-          <widget class="QWidget" name="widget_29" native="true"/>
-         </item>
-         <item row="1" column="3">
-          <widget class="QWidget" name="widget_48" native="true"/>
-         </item>
-         <item row="6" column="6">
-          <widget class="QWidget" name="widget_33" native="true"/>
-         </item>
-         <item row="2" column="1">
-          <widget class="QWidget" name="widget_59" native="true"/>
-         </item>
-         <item row="5" column="1">
-          <widget class="QWidget" name="widget_2" native="true"/>
-         </item>
-         <item row="4" column="7">
-          <widget class="QWidget" name="widget_70" native="true"/>
-         </item>
-         <item row="3" column="3">
-          <widget class="QWidget" name="widget_12" native="true"/>
-         </item>
-         <item row="3" column="6">
-          <widget class="QWidget" name="widget_25" native="true"/>
-         </item>
-         <item row="2" column="5">
-          <widget class="QWidget" name="widget_43" native="true"/>
-         </item>
-         <item row="7" column="6">
-          <widget class="QWidget" name="widget_39" native="true"/>
-         </item>
-         <item row="1" column="6">
-          <widget class="QWidget" name="widget_44" native="true"/>
-         </item>
-         <item row="0" column="5">
-          <widget class="QWidget" name="widget_47" native="true"/>
-         </item>
-         <item row="3" column="1">
-          <widget class="QWidget" name="widget_16" native="true"/>
-         </item>
-         <item row="7" column="2">
-          <widget class="QWidget" name="widget_46" native="true"/>
-         </item>
-         <item row="6" column="5">
-          <widget class="QWidget" name="widget_27" native="true"/>
-         </item>
-         <item row="0" column="7">
-          <widget class="QWidget" name="widget_69" native="true"/>
-         </item>
-         <item row="0" column="4">
-          <widget class="QWidget" name="widget_30" native="true"/>
-         </item>
-         <item row="6" column="3">
-          <widget class="QWidget" name="widget_20" native="true"/>
-         </item>
-         <item row="2" column="6">
-          <widget class="QWidget" name="widget_42" native="true"/>
-         </item>
-         <item row="4" column="0">
-          <widget class="QWidget" name="widget_7" native="true"/>
-         </item>
-         <item row="1" column="4">
-          <widget class="QWidget" name="widget_51" native="true"/>
-         </item>
-         <item row="0" column="6">
-          <widget class="QWidget" name="widget_26" native="true"/>
-         </item>
-         <item row="6" column="7">
-          <widget class="QWidget" name="widget_35" native="true"/>
-         </item>
-         <item row="2" column="0">
-          <widget class="QWidget" name="widget_58" native="true"/>
-         </item>
-         <item row="6" column="1">
-          <widget class="QWidget" name="widget_14" native="true"/>
-         </item>
-         <item row="4" column="5">
-          <widget class="QWidget" name="widget_15" native="true"/>
-         </item>
-         <item row="7" column="5">
-          <widget class="QWidget" name="widget_36" native="true"/>
-         </item>
-         <item row="4" column="4">
-          <widget class="QWidget" name="widget_37" native="true"/>
-         </item>
-         <item row="5" column="2">
-          <widget class="QWidget" name="widget_3" native="true"/>
-         </item>
-         <item row="2" column="3">
-          <widget class="QWidget" name="widget_49" native="true"/>
-         </item>
-         <item row="5" column="6">
-          <widget class="QWidget" name="widget_5" native="true"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QWidget" name="widget_13" native="true"/>
-         </item>
-         <item row="5" column="4">
-          <widget class="QWidget" name="widget_4" native="true"/>
-         </item>
-         <item row="2" column="2">
-          <widget class="QWidget" name="widget_23" native="true"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="QWidget" name="widget_8" native="true"/>
-         </item>
-         <item row="6" column="0">
-          <widget class="QWidget" name="widget_9" native="true"/>
-         </item>
-         <item row="7" column="0">
-          <widget class="QWidget" name="widget_54" native="true"/>
-         </item>
-         <item row="7" column="7">
-          <widget class="QWidget" name="widget_79" native="true"/>
-         </item>
-         <item row="0" column="2">
-          <widget class="QWidget" name="widget_53" native="true"/>
-         </item>
-         <item row="3" column="4">
-          <widget class="QWidget" name="widget_28" native="true"/>
-         </item>
-         <item row="7" column="3">
-          <widget class="QWidget" name="widget_19" native="true"/>
+         <item row="1" column="5">
+          <widget class="QWidget" name="field_14" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
          <item row="6" column="4">
-          <widget class="QWidget" name="widget_24" native="true"/>
+          <widget class="QWidget" name="field_53" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="3">
-          <widget class="QWidget" name="widget_52" native="true"/>
+         <item row="0" column="7">
+          <widget class="QWidget" name="field_8" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="7" column="4">
-          <widget class="QWidget" name="widget_55" native="true"/>
+         <item row="1" column="2">
+          <widget class="QWidget" name="field_11" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="5" column="7">
-          <widget class="QWidget" name="widget_73" native="true"/>
+         <item row="3" column="0">
+          <widget class="QWidget" name="field_25" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="6" column="2">
-          <widget class="QWidget" name="widget_17" native="true"/>
+         <item row="6" column="5">
+          <widget class="QWidget" name="field_54" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="1" column="5">
-          <widget class="QWidget" name="widget_45" native="true"/>
+         <item row="4" column="7">
+          <widget class="QWidget" name="field_40" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="4" column="2">
-          <widget class="QWidget" name="widget_11" native="true"/>
+         <item row="1" column="3">
+          <widget class="QWidget" name="field_12" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
-         <item row="3" column="5">
-          <widget class="QWidget" name="widget_32" native="true"/>
+         <item row="2" column="7">
+          <widget class="QWidget" name="field_24" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="6">
+          <widget class="QWidget" name="field_47" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QWidget" name="field_18" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
          <item row="3" column="2">
-          <widget class="QWidget" name="widget_22" native="true"/>
+          <widget class="QWidget" name="field_27" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="2" column="4">
-          <widget class="QWidget" name="widget_50" native="true"/>
+         <item row="7" column="0">
+          <widget class="QWidget" name="field_57" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QWidget" name="widget_57" native="true"/>
+         <item row="5" column="1">
+          <widget class="QWidget" name="field_42" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QWidget" name="field_33" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QWidget" name="field_4" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="3">
+          <widget class="QWidget" name="field_52" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QWidget" name="field_17" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QWidget" name="widget_34" native="true"/>
+          <widget class="QWidget" name="field_58" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
-         <item row="5" column="0">
-          <widget class="QWidget" name="widget" native="true"/>
+         <item row="0" column="2">
+          <widget class="QWidget" name="field_3" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
-         <item row="5" column="5">
-          <widget class="QWidget" name="widget_31" native="true"/>
+         <item row="3" column="6">
+          <widget class="QWidget" name="field_31" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QWidget" name="widget_21" native="true"/>
+         <item row="3" column="4">
+          <widget class="QWidget" name="field_29" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
-         <item row="5" column="3">
-          <widget class="QWidget" name="widget_6" native="true"/>
+         <item row="4" column="6">
+          <widget class="QWidget" name="field_39" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
          </item>
          <item row="4" column="3">
-          <widget class="QWidget" name="widget_38" native="true"/>
+          <widget class="QWidget" name="field_36" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QWidget" name="field_20" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="7">
+          <widget class="QWidget" name="field_32" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="7">
+          <widget class="QWidget" name="field_56" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="6">
+          <widget class="QWidget" name="field_15" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="7">
+          <widget class="QWidget" name="field_16" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QWidget" name="field_49" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QWidget" name="field_41" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QWidget" name="field_10" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="7">
+          <widget class="QWidget" name="field_48" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="7">
+          <widget class="QWidget" name="field_64" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QWidget" name="field_43" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="3">
+          <widget class="QWidget" name="field_44" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="5">
+          <widget class="QWidget" name="field_38" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="4">
+          <widget class="QWidget" name="field_61" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="6">
+          <widget class="QWidget" name="field_63" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QWidget" name="field_35" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QWidget" name="field_51" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QWidget" name="field_2" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QWidget" name="field_59" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QWidget" name="field_5" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
+          <widget class="QWidget" name="field_23" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QWidget" name="field_34" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QWidget" name="field_19" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="5">
+          <widget class="QWidget" name="field_30" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QWidget" name="field_50" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QWidget" name="field_13" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="QWidget" name="field_7" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="5">
+          <widget class="QWidget" name="field_46" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="6">
+          <widget class="QWidget" name="field_55" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="4">
+          <widget class="QWidget" name="field_37" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QWidget" name="field_28" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QWidget" name="field_60" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QWidget" name="field_22" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QWidget" name="widget_18" native="true"/>
+          <widget class="QWidget" name="field_1" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QWidget" name="field_9" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="5">
+          <widget class="QWidget" name="field_62" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QWidget" name="field_21" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QWidget" name="field_26" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 254, 242);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="4">
+          <widget class="QWidget" name="field_45" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QWidget" name="field_6" native="true">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(139, 69, 19);</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -227,7 +486,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>813</width>
+     <width>929</width>
      <height>20</height>
     </rect>
    </property>

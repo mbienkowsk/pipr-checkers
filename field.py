@@ -29,3 +29,6 @@ class Field:
     @property
     def location(self):
         return (self.x, self.y)
+
+    def __str__(self) -> str:
+        return f'[{self.color}, {self.location}]'
