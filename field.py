@@ -4,6 +4,7 @@ class Field:
         self.piece = None
         self._x = x
         self._y = y
+        self._corresponding_widget = None
 
     def is_taken(self):
         if not self.piece:
@@ -32,3 +33,11 @@ class Field:
 
     def __str__(self) -> str:
         return f'[{self.color}, {self.location}]'
+
+    @property
+    def corresponding_widget(self):
+        return self._corresponding_widget
+
+    @corresponding_widget.setter
+    def corresponding_widget(self, new_widget):
+        self._corresponding_widget = new_widget

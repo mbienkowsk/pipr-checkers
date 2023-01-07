@@ -6,11 +6,4 @@ from field import Field
 import typing
 
 
-class FieldWidget(QWidget):
-    def __init__(self, field: 'Field', parent: typing.Optional[QWidget] = ..., f: QtCore.Qt.WindowFlags = ...):
-        super().__init__(parent, f)
-        self._field = field
-
-
-# board = Board
-# def setup_pieces(board):
+#

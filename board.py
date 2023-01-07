@@ -7,10 +7,11 @@ class Board:
         self._fields = None
         self._setup_fields()
 
-    def get_field_by_location(location, self):
-        for field in self.fields:
-            if field.location == location:
-                return field
+    def get_field_by_location(self, location) -> 'Field':
+        for row in self.fields:
+            for field in row:
+                if field.location == location:
+                    return field
         return None
 
     @property
@@ -45,6 +46,3 @@ class Board:
                 result += str(field)
             result += '\n'
         return result
-
-
-
