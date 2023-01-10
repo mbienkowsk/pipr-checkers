@@ -69,7 +69,7 @@ class Piece:
                 self.can_move_pos_y = True
                 self.can_move_neg_y = True
         else:
-            if self.move_constant() == 1:
+            if self.move_constant == 1:
                 self.can_move_pos_y = True
                 self.can_move_neg_y = False
             else:
@@ -81,6 +81,8 @@ class Piece:
         could possibly make, not taking in consideration whether they're legal
         '''
         moves = list()
+        self.set_possible_moving_directions_x()
+        self.set_possible_moving_directions_y()
         x = self.x
         y = self.y
 
@@ -89,20 +91,21 @@ class Piece:
                 moves.append(Move(False, (x, y), (x + 1, y + 1), self))
             if self.can_move_neg_y:
                 moves.append(Move(False, (x, y), (x + 1, y - 1), self))
-        if self.can_move_pos_x:
+        if self.can_move_neg_x:
             if self.can_move_pos_y:
                 moves.append(Move(False, (x, y), (x - 1, y + 1), self))
             if self.can_move_neg_y:
                 moves.append(Move(False, (x, y), (x - 1, y - 1), self))
+        return moves
 
     def all_legal_non_attacking_moves(self, board: 'Board'):
         '''returns the list of legal non attacking moves
         '''
         legal_moves = []
-        for move in self.all_legal_non_attacking_moves():
+        for move in self.all_possible_non_attacking_moves():
             location_to_move = move.new_cords
             field_to_move = board.get_field_by_location(location_to_move)
-            if not field_to_move.is_taken:
+            if not field_to_move.is_taken():
                 legal_moves.append(move)
         return legal_moves
 
@@ -132,7 +135,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant() == 1:
+        if self.move_constant == 1:
             return False
         elif self.x == 7 or self.y == 0:
             return False
@@ -154,7 +157,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant() == -1:
+        if self.move_constant == -1:
             return False
         elif self.x == 0 or self.y == 7:
             return False
@@ -176,7 +179,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant() == 1:
+        if self.move_constant == 1:
             return False
         elif self.x == 0 or self.y == 0:
             return False
@@ -213,7 +216,7 @@ class Piece:
         if self.all_legal_attacking_moves(board):
             return self.all_legal_attacking_moves(board)
         else:
-            return self.all_legal_attacking_moves(board)
+            return self.all_legal_non_attacking_moves(board)
 
     def location_to_draw(self):
         x, y = self.x, self.y
@@ -295,7 +298,7 @@ class Board:
     def _setup_pieces(self):
         for i in range(3):
             for j in range(8):
-                current_field = self.fields[i][j]
+                current_field = self.fields[j][i]
                 if current_field.color == BROWN:
                     piece = Piece('black', j, i)
                     current_field.piece = piece
@@ -303,7 +306,7 @@ class Board:
 
         for i in range(5, 8):
             for j in range(8):
-                current_field = self.fields[i][j]
+                current_field = self.fields[j][i]
                 if current_field.color == BROWN:
                     piece = Piece('white', j, i)
                     current_field.piece = piece

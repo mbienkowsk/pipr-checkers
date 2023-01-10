@@ -17,7 +17,6 @@ class Game:
             player.color: player
             for player in self.players
         }
-        #   ewentualne bledy do lapania?
         return player_color_dictionary[color]
 
 

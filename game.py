@@ -1,10 +1,20 @@
 import pygame
 from sys import exit
-from constants import WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING
-from piece_move_board import Board
+from constants import WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN
+from piece_move_board import Board, Piece
+from player import Player
 
 
 class Game:
+
+    def __init__(self, screen) -> None:
+        self.board = Board()
+        self.screen = screen
+        self.players = [Player('white'), Player('black')]
+        self.load_images()
+        self.turn = 'white'
+        self.selected_square = None
+        self.prev_selected_square = None
 
     def load_images(self):
         self.images = {
@@ -13,11 +23,6 @@ class Game:
             'WP': pygame.transform.scale(pygame.image.load('images/white_piece.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING)),
             'BP': pygame.transform.scale(pygame.image.load('images/black_piece.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING))
         }
-
-    def __init__(self, screen) -> None:
-        self.board = Board()
-        self.screen = screen
-        self.load_images()
 
     def draw_board(self):
         self.draw_squares()
@@ -38,12 +43,37 @@ class Game:
                     piece_rect = piece_surf.get_rect(center=current_piece.location_to_draw())
                     self.screen.blit(piece_surf, piece_rect)
 
+    def show_possible_moves(self, piece: 'Piece'):
+        possible_moves = piece.all_possible_legal_moves(self.board)
+        possible_move_squares = [move.new_cords for move in possible_moves]
+
+        field_surf = pygame.Surface((FIELD_SIZE, FIELD_SIZE))
+        field_surf.fill(BROWN)
+        pygame.draw.circle(field_surf, GREEN, (FIELD_SIZE / 2, FIELD_SIZE / 2), FIELD_SIZE * 0.35)
+
+        for square in possible_move_squares:
+            x, y = square
+            square_rect = pygame.Rect(x * FIELD_SIZE, y * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE)
+            self.screen.blit(field_surf, (square_rect))
+
+    def player_by_color(self, color):
+        player_color_dictionary = {
+            player.color: player
+            for player in self.players
+        }
+        return player_color_dictionary[color]
+
+    def change_turn(self):
+        self.turn = 'white' if self.turn == 'black' else 'black'
+
 
 def main():
     pygame.init()
 
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+    game = Game(screen)
+    game.draw_board()
 
     while True:
 
@@ -52,8 +82,34 @@ def main():
                 pygame.quit()
                 exit()
 
-        game = Game(screen)
-        game.draw_board()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                clicked_pixel_x, clicked_pixel_y = pygame.mouse.get_pos()
+                clicked_field_location = (int(clicked_pixel_x // FIELD_SIZE), int(clicked_pixel_y // FIELD_SIZE))
+                clicked_field = game.board.get_field_by_location(clicked_field_location)
+
+                if clicked_field.piece is not None:
+
+                    if clicked_field.piece.color == game.turn:
+
+                        if game.selected_square is None:
+                            game.selected_square = clicked_field
+                            selected_piece = clicked_field.piece
+                            game.show_possible_moves(selected_piece)
+
+                        else:
+                            game.draw_board()
+                            game.selected_square = clicked_field
+                            selected_piece = clicked_field.piece
+                            game.show_possible_moves(selected_piece)
+
+                    else:
+                        game.draw_board()
+
+                else:
+                    if game.selected_square.piece.color != game.turn:
+
+
+
         pygame.display.update()
         clock.tick(MAX_FPS)
 
