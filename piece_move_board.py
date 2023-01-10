@@ -115,7 +115,7 @@ class Piece:
         '''
         if self.move_constant == -1:
             return False
-        elif self.x == 7 or self.y == 7:
+        elif self.x in (6, 7) or self.y in (6, 7):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -137,7 +137,7 @@ class Piece:
         '''
         if self.move_constant == 1:
             return False
-        elif self.x == 7 or self.y == 0:
+        elif self.x in (6, 7) or self.y in (0, 1):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -159,7 +159,7 @@ class Piece:
         '''
         if self.move_constant == -1:
             return False
-        elif self.x == 0 or self.y == 7:
+        elif self.x in (0, 1) or self.y in (6, 7):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -181,7 +181,7 @@ class Piece:
         '''
         if self.move_constant == 1:
             return False
-        elif self.x == 0 or self.y == 0:
+        elif self.x in (0, 1) or self.y in (0, 1):
             return False
         else:
             field_to_attack = board.get_field_by_location(
