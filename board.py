@@ -1,4 +1,5 @@
 from field import Field
+from piece_and_move import Piece
 
 
 class Board:
@@ -14,29 +15,31 @@ class Board:
                     return field
         return None
 
-    @property
-    def fields(self):
-        return self._fields
-
-    @fields.setter
-    def fields(self, new_fields):
-        self._fields = new_fields
-
     def _setup_fields(self):
         self.fields = [[] for i in range(8)]
-        for k in range(8):
-            if k % 2 == 0:
-                for i in range(8):
-                    if i % 2 == 0:
-                        self.fields[k].append(Field('white', i, k))
-                    else:
-                        self.fields[k].append(Field('black', i, k))
-            else:
-                for i in range(8):
-                    if i % 2 == 1:
-                        self.fields[k].append(Field('white', i, k))
-                    else:
-                        self.fields[k].append(Field('black', i, k))
+        for i in range(8):
+            for j in range(8):
+                if (i + j) % 2 == 0:
+                    self.fields[i].append(Field('black', i, j))
+                else:
+                    self.fields[i].appedn(Field('white', i, j))
+
+    def setup_pieces(self):
+        for i in range(3):
+            for j in range(8):
+                current_field = self.board.fields[i][j]
+                if current_field.color == 'black':
+                    piece = Piece('black', i, j)
+                    current_field.piece = piece
+                    # self.player_by_color('black').pieces.append(piece)
+
+        for i in range(5, 8):
+            for j in range(8):
+                current_field = self.board.fields[i][j]
+                if current_field.color == 'black':
+                    piece = Piece('white', i, j)
+                    current_field.piece = piece
+                    # self.player_by_color('white').pieces.append(piece)
 
     def __str__(self) -> str:
         #   to delete later, for testing purposes
@@ -46,3 +49,15 @@ class Board:
                 result += str(field)
             result += '\n'
         return result
+
+    @property
+    def fields(self):
+        return self._fields
+
+    @fields.setter
+    def fields(self, new_fields):
+        self._fields = new_fields
+
+
+board = Board()
+print(board)

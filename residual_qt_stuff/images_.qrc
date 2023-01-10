@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>images/black_king.png</file>
+    <file>images/black_piece.png</file>
+    <file>images/white_king.png</file>
+    <file>images/white_piece.png</file>
+    <file>images/checkerboard.jpg</file>
+  </qresource>
+</RCC>

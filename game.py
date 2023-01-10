@@ -10,6 +10,7 @@ class Game:
         self._move_count_without_attacks = 0
         self.turn = self.player_by_color('white')
         self.result = None
+        self.board._setup_fields()
 
     def player_by_color(self, color):
         player_color_dictionary = {
@@ -18,6 +19,7 @@ class Game:
         }
         #   ewentualne bledy do lapania?
         return player_color_dictionary[color]
+
 
     @property
     def players(self):
@@ -31,6 +33,6 @@ class Game:
         the counter is reset to 0 with each attacking move made'''
         return self._move_count_without_attacks
 
-    def draw_board():
-        pass
-    #   do implementacji kiedy wymyslimy ktore gui brac
+    @property
+    def board(self):
+        return self._board

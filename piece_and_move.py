@@ -1,5 +1,6 @@
-from move import Move
+from dataclasses import dataclass
 from board import Board
+from typing import Tuple
 
 
 class Piece:
@@ -238,3 +239,11 @@ class Piece:
     @property
     def location(self):
         return (self.x, self.y)
+
+
+@dataclass(frozen=True)
+class Move:
+    attacking: bool
+    old_cords: Tuple[int, int]
+    new_cords: Tuple[int, int]
+    piece: Piece

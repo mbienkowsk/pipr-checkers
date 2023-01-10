@@ -1,7 +1,7 @@
 class Field:
     def __init__(self, color, x, y) -> None:
         self.color = color
-        self.piece = None
+        self._piece = None
         self._x = x
         self._y = y
         self._corresponding_widget = None
@@ -41,3 +41,11 @@ class Field:
     @corresponding_widget.setter
     def corresponding_widget(self, new_widget):
         self._corresponding_widget = new_widget
+
+    @property
+    def piece(self):
+        return self._piece
+
+    @piece.setter
+    def piece(self, new_piece):
+        self._piece = new_piece

@@ -7,10 +7,11 @@ class Player:
     param color - the color of the player's pieces
     type color - str
     '''
+
     def __init__(self, color, ai=False) -> None:
         self.color = color
         self._ai = ai
-
+        self._pieces = []
 
     @property
     def ai(self):
@@ -21,4 +22,6 @@ class Player:
         '''
         return self._ai
 
-
+    @property
+    def pieces(self):
+        return self._pieces
