@@ -14,7 +14,8 @@ class Game:
         self.load_images()
         self.turn = 'white'
         self.selected_square = None
-        self.prev_selected_square = None
+        # self.prev_selected_square = None
+        self.selected_piece = None
 
     def load_images(self):
         self.images = {
@@ -89,26 +90,30 @@ def main():
 
                 if clicked_field.piece is not None:
 
+                    game.draw_board()
                     if clicked_field.piece.color == game.turn:
-
-                        if game.selected_square is None:
-                            game.selected_square = clicked_field
-                            selected_piece = clicked_field.piece
-                            game.show_possible_moves(selected_piece)
-
-                        else:
-                            game.draw_board()
-                            game.selected_square = clicked_field
-                            selected_piece = clicked_field.piece
-                            game.show_possible_moves(selected_piece)
-
+                        game.selected_square = clicked_field
+                        game.selected_piece = clicked_field.piece
+                        game.show_possible_moves(game.selected_piece)
                     else:
-                        game.draw_board()
+                        game.selected_piece = None
+                        game.selected_square = None
 
                 else:
-                    if game.selected_square.piece.color != game.turn:
+                    if game.selected_piece is not None:
+                        possible_moving_locations = {
+                            move.new_cords: move
+                            for move in game.selected_piece.all_possible_legal_moves(game.board)
+                        }
 
-
+                        if clicked_field.location in possible_moving_locations.keys():
+                            move_to_be_made = possible_moving_locations[clicked_field.location]
+                            game.board.move_piece(game.selected_piece, move_to_be_made)
+                            game.draw_board()
+                            if move_to_be_made.attacking:
+                                pass
+                            else:
+                                game.change_turn()
 
         pygame.display.update()
         clock.tick(MAX_FPS)

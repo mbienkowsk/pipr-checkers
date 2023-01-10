@@ -122,7 +122,7 @@ class Piece:
                 (self.x + 1, self.y + 1)
             )
             field_to_jump_to = board.get_field_by_location(
-                self.x + 2, self.y + 2
+                (self.x + 2, self.y + 2)
             )
             if not field_to_attack.is_taken():
                 return False
@@ -328,3 +328,11 @@ class Board:
                 result += str(field)
             result += '\n'
         return result
+
+    def move_piece(self, piece, move):
+        if move.attacking:
+            pass
+        else:
+            piece.x, piece.y = move.new_cords
+            self.get_field_by_location(move.old_cords).piece = None
+            self.get_field_by_location(move.new_cords).piece = piece

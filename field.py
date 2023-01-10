@@ -9,7 +9,7 @@ class Field:
         self._corresponding_widget = None
 
     def is_taken(self):
-        if not self.piece:
+        if self.piece is None:
             return False
         return True
 
