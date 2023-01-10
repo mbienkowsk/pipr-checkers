@@ -1,5 +1,5 @@
 from field import Field
-from piece_and_move import Piece
+from piece_move_board import Piece
 
 
 class Board:
@@ -20,9 +20,9 @@ class Board:
         for i in range(8):
             for j in range(8):
                 if (i + j) % 2 == 0:
-                    self.fields[i].append(Field('black', i, j))
+                    self.fields[i].append(Field('white', i, j))
                 else:
-                    self.fields[i].appedn(Field('white', i, j))
+                    self.fields[i].append(Field('black', i, j))
 
     def setup_pieces(self):
         for i in range(3):
@@ -41,15 +41,6 @@ class Board:
                     current_field.piece = piece
                     # self.player_by_color('white').pieces.append(piece)
 
-    def __str__(self) -> str:
-        #   to delete later, for testing purposes
-        result = ''
-        for row in self.fields:
-            for field in row:
-                result += str(field)
-            result += '\n'
-        return result
-
     @property
     def fields(self):
         return self._fields
@@ -58,6 +49,11 @@ class Board:
     def fields(self, new_fields):
         self._fields = new_fields
 
-
-board = Board()
-print(board)
+    def __str__(self) -> str:
+        #   to delete later, for testing purposes
+        result = ''
+        for row in self.fields:
+            for field in row:
+                result += str(field)
+            result += '\n'
+        return result

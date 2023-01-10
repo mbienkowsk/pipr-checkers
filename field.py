@@ -1,3 +1,5 @@
+
+
 class Field:
     def __init__(self, color, x, y) -> None:
         self.color = color
@@ -33,14 +35,6 @@ class Field:
 
     def __str__(self) -> str:
         return f'[{self.color}, {self.location}]'
-
-    @property
-    def corresponding_widget(self):
-        return self._corresponding_widget
-
-    @corresponding_widget.setter
-    def corresponding_widget(self, new_widget):
-        self._corresponding_widget = new_widget
 
     @property
     def piece(self):

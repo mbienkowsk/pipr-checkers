@@ -2,6 +2,8 @@ from dataclasses import dataclass
 # from board import Board
 from typing import Tuple
 from field import Field
+from constants import BEIGE, BROWN, FIELD_SIZE
+
 
 class Piece:
     def __init__(self, color, x, y) -> None:
@@ -11,12 +13,21 @@ class Piece:
         self._x = x
         self._y = y
 
+        if self.color == 'white':
+            self.image_dict_ind = 'WP'
+        else:
+            self.image_dict_ind = 'BP'
+
     def promote(self):
         '''promote a piece to a king piece and set the right attributes
         to some of its values
         '''
         self.king = True
         self.value = 2  # not sure if 2 is the right evaluation
+        if self.image_dict_ind == 'WP':
+            self.image_dict_ind = 'WK'
+        else:
+            self.image_dict_ind = 'BK'
 
     @property
     def move_constant(self):
@@ -204,6 +215,12 @@ class Piece:
         else:
             return self.all_legal_attacking_moves(board)
 
+    def location_to_draw(self):
+        x, y = self.x, self.y
+        x_to_draw = x * FIELD_SIZE + 0.5 * FIELD_SIZE
+        y_to_draw = y * FIELD_SIZE + 0.5 * FIELD_SIZE
+        return (x_to_draw, y_to_draw)
+
     @property
     def value(self):
         return self.value
@@ -240,6 +257,10 @@ class Piece:
     def location(self):
         return (self.x, self.y)
 
+    def __str__(self) -> str:
+        # for testing purposes, to delete later
+        return f'{self.location}: {self.color}'
+
 
 @dataclass(frozen=True)
 class Move:
@@ -251,9 +272,9 @@ class Move:
 
 class Board:
     def __init__(self) -> None:
-        #   optional parameter for a specific setting of the pieces?
         self._fields = None
         self._setup_fields()
+        self._setup_pieces()
 
     def get_field_by_location(self, location) -> 'Field':
         for row in self.fields:
@@ -267,24 +288,24 @@ class Board:
         for i in range(8):
             for j in range(8):
                 if (i + j) % 2 == 0:
-                    self.fields[i].append(Field('white', i, j))
+                    self.fields[i].append(Field(BEIGE, i, j))
                 else:
-                    self.fields[i].append(Field('black', i, j))
+                    self.fields[i].append(Field(BROWN, i, j))
 
-    def setup_pieces(self):
+    def _setup_pieces(self):
         for i in range(3):
             for j in range(8):
-                current_field = self.board.fields[i][j]
-                if current_field.color == 'black':
-                    piece = Piece('black', i, j)
+                current_field = self.fields[i][j]
+                if current_field.color == BROWN:
+                    piece = Piece('black', j, i)
                     current_field.piece = piece
                     # self.player_by_color('black').pieces.append(piece)
 
         for i in range(5, 8):
             for j in range(8):
-                current_field = self.board.fields[i][j]
-                if current_field.color == 'black':
-                    piece = Piece('white', i, j)
+                current_field = self.fields[i][j]
+                if current_field.color == BROWN:
+                    piece = Piece('white', j, i)
                     current_field.piece = piece
                     # self.player_by_color('white').pieces.append(piece)
 
