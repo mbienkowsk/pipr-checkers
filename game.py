@@ -117,6 +117,7 @@ def main():
 
                             if move_to_be_made.attacking:
                                 pass
+
                             else:
                                 game.selected_piece = None
                                 game.change_turn()

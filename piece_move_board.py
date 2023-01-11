@@ -130,7 +130,7 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken:
+                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
                     return True
                 return False
 
@@ -152,7 +152,7 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken:
+                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
                     return True
                 return False
 
@@ -174,7 +174,7 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken:
+                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
                     return True
                 return False
 
@@ -196,7 +196,7 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken:
+                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
                     return True
                 return False
 
@@ -210,6 +210,7 @@ class Piece:
             legal_moves.append(Move(True, self.location, (self.x + 2, self.y - 2), self))
         if self.can_attack_minus_minus(board):
             legal_moves.append(Move(True, self.location, (self.x - 2, self.y - 2), self))
+        return legal_moves
 
     def all_possible_legal_moves(self, board: 'Board'):
         '''returns the list of potential legal moves a piece can make,
