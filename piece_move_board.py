@@ -334,9 +334,15 @@ class Board:
         return result
 
     def move_piece(self, piece, move):
-        if move.attacking:
-            pass
+        if move.attacking:  # do we need the separation?
+            piece.x, piece.y = move.new_cords
+            self.get_field_by_location(move.old_cords).piece = None
+            self.get_field_by_location(move.new_cords).piece = piece
         else:
             piece.x, piece.y = move.new_cords
             self.get_field_by_location(move.old_cords).piece = None
             self.get_field_by_location(move.new_cords).piece = piece
+
+    def delete_piece(self, piece):
+        piece_field = self.get_field_by_location(piece.location)
+        piece_field.piece = None

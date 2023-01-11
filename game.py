@@ -116,7 +116,18 @@ def main():
                                 game.draw_board()
 
                             if move_to_be_made.attacking:
-                                pass
+                                old_x, old_y = move_to_be_made.old_cords
+                                next_x, next_y = move_to_be_made.new_cords
+                                jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
+                                piece_to_take = game.board.get_field_by_location((jumped_x, jumped_y)).piece
+                                game.board.delete_piece(piece_to_take)
+                                game.board.move_piece(game.selected_piece, move_to_be_made)
+                                game.draw_board()
+                                while game.selected_piece.all_legal_attacking_moves(game.board):
+                                    pass
+                                game.selected_piece = None
+                                game.change_turn()
+                                print(len(game.player_by_color(game.turn).pieces))
 
                             else:
                                 game.selected_piece = None
