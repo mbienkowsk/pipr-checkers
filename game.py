@@ -10,12 +10,13 @@ class Game:
     def __init__(self, screen) -> None:
         self.board = Board()
         self.screen = screen
+        self.possible_move_dict = {}
         self.players = [Player('white'), Player('black')]
         self.load_images()
         self.turn = 'white'
-        self.selected_square = None
-        # self.prev_selected_square = None
         self.selected_piece = None
+        self.update_player_pieces()
+        self.setup_possible_player_moves()
 
     def load_images(self):
         self.images = {
@@ -30,32 +31,30 @@ class Game:
         self.draw_pieces()
 
     def draw_squares(self):
-        for row in self.board.fields:
-            for field in row:
-                field_rect = pygame.Rect(field.x * FIELD_SIZE, field.y * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE)
-                pygame.draw.rect(self.screen, field.color, field_rect)
+        for field in self.board.one_dimensional_field_list:
+            field_rect = pygame.Rect(field.x * FIELD_SIZE, field.y * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE)
+            pygame.draw.rect(self.screen, field.color, field_rect)
 
     def draw_pieces(self):
-        for row in self.board.fields:
-            for field in row:
-                if field.is_taken():
-                    current_piece = field.piece
-                    piece_surf = self.images[current_piece.image_dict_ind]
-                    piece_rect = piece_surf.get_rect(center=current_piece.location_to_draw())
-                    self.screen.blit(piece_surf, piece_rect)
+        for field in self.board.one_dimensional_field_list:
+            if field.is_taken():
+                current_piece = field.piece
+                piece_surf = self.images[current_piece.image_dict_ind]
+                piece_rect = piece_surf.get_rect(center=current_piece.location_to_draw())
+                self.screen.blit(piece_surf, piece_rect)
+
+    def highlight_field(self, field):
+        field_surf = pygame.Surface((FIELD_SIZE, FIELD_SIZE))
+        field_surf.fill(BROWN)
+        square_rect = pygame.Rect(field.x * FIELD_SIZE, field.y * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE)
+        pygame.draw.circle(field_surf, GREEN, (FIELD_SIZE / 2, FIELD_SIZE / 2), FIELD_SIZE * 0.35)
+        self.screen.blit(field_surf, (square_rect))
 
     def show_possible_moves(self, piece: 'Piece'):
         possible_moves = piece.all_possible_legal_moves(self.board)
-        possible_move_squares = [move.new_cords for move in possible_moves]
-
-        field_surf = pygame.Surface((FIELD_SIZE, FIELD_SIZE))
-        field_surf.fill(BROWN)
-        pygame.draw.circle(field_surf, GREEN, (FIELD_SIZE / 2, FIELD_SIZE / 2), FIELD_SIZE * 0.35)
-
-        for square in possible_move_squares:
-            x, y = square
-            square_rect = pygame.Rect(x * FIELD_SIZE, y * FIELD_SIZE, FIELD_SIZE, FIELD_SIZE)
-            self.screen.blit(field_surf, (square_rect))
+        possible_move_squares = [self.board.get_field_by_location(move.new_cords) for move in possible_moves]
+        for field in possible_move_squares:
+            self.highlight_field(field)
 
     def player_by_color(self, color):
         player_color_dictionary = {
@@ -66,6 +65,53 @@ class Game:
 
     def change_turn(self):
         self.turn = 'white' if self.turn == 'black' else 'black'
+
+    def update_player_pieces(self):
+        for player in self.players:
+            player.pieces.clear()
+
+        for field in self.board.one_dimensional_field_list:
+            if field.is_taken():
+                self.player_by_color(field.piece.color).pieces.append(field.piece)
+
+    def setup_possible_player_moves(self):
+        self.possible_move_dict = {
+            player: {
+                piece: piece.all_possible_legal_moves(self.board)
+                for piece in player.pieces
+            }
+            for player in self.players
+        }
+
+    def player_has_to_attack(self, color):
+        player = self.player_by_color(color)
+        player_dict = self.possible_move_dict[player]
+        for value in player_dict.values():
+            for move in value:
+                if move.attacking:
+                    return True
+        return False
+
+    def can_piece_move(self, piece):
+        '''Determines whether a piece can be moved during a player's turn
+        If the piece can't attack and another one of its color can,
+        returns False. Else, returns True
+        '''
+        if self.player_has_to_attack(piece.color):
+            if not piece.all_legal_attacking_moves(self.board):
+                return False
+            #   have to come back to implement multiple jumps in a row
+        return True
+
+    # def handle_non_
+
+    def handle_piece_click(self, clicked_piece):
+        if clicked_piece.color == self.turn:
+            if self.can_piece_move(clicked_piece):
+                self.show_possible_moves(clicked_piece)
+                self.selected_piece = clicked_piece
+            else:
+                self.selected_piece = None
 
 
 def main():
@@ -87,17 +133,10 @@ def main():
                 clicked_pixel_x, clicked_pixel_y = pygame.mouse.get_pos()
                 clicked_field_location = (int(clicked_pixel_x // FIELD_SIZE), int(clicked_pixel_y // FIELD_SIZE))
                 clicked_field = game.board.get_field_by_location(clicked_field_location)
+                clicked_piece = clicked_field.piece
 
-                if clicked_field.piece is not None:
-
-                    game.draw_board()
-                    if clicked_field.piece.color == game.turn:
-                        game.selected_square = clicked_field
-                        game.selected_piece = clicked_field.piece
-                        game.show_possible_moves(game.selected_piece)
-                    else:
-                        game.selected_piece = None
-                        game.selected_square = None
+                if clicked_piece is not None:
+                    game.handle_piece_click(clicked_piece)
 
                 else:
                     if game.selected_piece is not None:
@@ -124,14 +163,17 @@ def main():
                                 game.board.move_piece(game.selected_piece, move_to_be_made)
                                 game.draw_board()
                                 while game.selected_piece.all_legal_attacking_moves(game.board):
-                                    pass
+                                    break
                                 game.selected_piece = None
                                 game.change_turn()
-                                print(len(game.player_by_color(game.turn).pieces))
+                                game.update_player_pieces()
 
                             else:
-                                game.selected_piece = None
-                                game.change_turn()
+                                if not game.player_has_to_attack(game.turn):
+                                    game.selected_piece = None
+                                    game.change_turn()
+                                else:
+                                    game.selected_piece = None
 
         pygame.display.update()
         clock.tick(MAX_FPS)

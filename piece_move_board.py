@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-# from board import Board
 from typing import Tuple
 from field import Field
 from constants import BEIGE, BROWN, FIELD_SIZE
@@ -346,3 +345,11 @@ class Board:
     def delete_piece(self, piece):
         piece_field = self.get_field_by_location(piece.location)
         piece_field.piece = None
+
+    @property
+    def one_dimensional_field_list(self):
+        field_list = list()
+        for row in self.fields:
+            for field in row:
+                field_list.append(field)
+        return field_list
