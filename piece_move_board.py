@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Tuple
 from field import Field
 from constants import BEIGE, BROWN, FIELD_SIZE
+from errors import NonexistingFieldCallError
 
 
 class Piece:
@@ -61,10 +62,12 @@ class Piece:
         to a square with a higher and lower x than its current square
         '''
         if self.king:
-            if self.x == 7:
+            if self.y == 7:
                 self.can_move_pos_y = False
-            if self.x == 0:
+                self.can_move_neg_y = True
+            elif self.y == 0:
                 self.can_move_neg_y = False
+                self.can_move_pos_y = True
             else:
                 self.can_move_pos_y = True
                 self.can_move_neg_y = True
@@ -284,7 +287,7 @@ class Board:
             for field in row:
                 if field.location == location:
                     return field
-        return None
+        raise NonexistingFieldCallError(f'Tried to obtain a nonexisting field: {location}')
 
     def _setup_fields(self):
         self.fields = [[] for i in range(8)]

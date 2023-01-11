@@ -6,7 +6,6 @@ class Field:
         self._piece = None
         self._x = x
         self._y = y
-        self._corresponding_widget = None
 
     def is_taken(self):
         if self.piece is None:

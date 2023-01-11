@@ -1,0 +1,3 @@
+
+class NonexistingFieldCallError(ValueError):
+    pass

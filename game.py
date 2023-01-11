@@ -109,10 +109,16 @@ def main():
                         if clicked_field.location in possible_moving_locations.keys():
                             move_to_be_made = possible_moving_locations[clicked_field.location]
                             game.board.move_piece(game.selected_piece, move_to_be_made)
+                            new_y = move_to_be_made.new_cords[1]
                             game.draw_board()
+                            if new_y in (0, 7):
+                                game.selected_piece.promote()
+                                game.draw_board()
+
                             if move_to_be_made.attacking:
                                 pass
                             else:
+                                game.selected_piece = None
                                 game.change_turn()
 
         pygame.display.update()
