@@ -16,7 +16,7 @@ class Game:
         self.turn = 'white'
         self.selected_piece = None
         self.update_player_pieces()
-        self.setup_possible_player_moves()
+        self.update_possible_player_moves()
 
     def load_images(self):
         self.images = {
@@ -51,6 +51,7 @@ class Game:
         self.screen.blit(field_surf, (square_rect))
 
     def show_possible_moves(self, piece: 'Piece'):
+        self.draw_board()
         possible_moves = piece.all_possible_legal_moves(self.board)
         possible_move_squares = [self.board.get_field_by_location(move.new_cords) for move in possible_moves]
         for field in possible_move_squares:
@@ -74,7 +75,7 @@ class Game:
             if field.is_taken():
                 self.player_by_color(field.piece.color).pieces.append(field.piece)
 
-    def setup_possible_player_moves(self):
+    def update_possible_player_moves(self):
         self.possible_move_dict = {
             player: {
                 piece: piece.all_possible_legal_moves(self.board)
@@ -103,15 +104,39 @@ class Game:
             #   have to come back to implement multiple jumps in a row
         return True
 
-    # def handle_non_
-
     def handle_piece_click(self, clicked_piece):
+        self.update_possible_player_moves()
         if clicked_piece.color == self.turn:
             if self.can_piece_move(clicked_piece):
                 self.show_possible_moves(clicked_piece)
                 self.selected_piece = clicked_piece
             else:
                 self.selected_piece = None
+        else:
+            self.selected_piece = None
+            self.draw_board()
+
+    def feasible_player_moves(self, color):
+        self.update_possible_player_moves()
+        move_dictionary = self.possible_move_dict[self.player_by_color(color)]
+        return {
+            piece: move_dictionary[piece]
+            for piece in move_dictionary.keys()
+            if self.can_piece_move(piece)
+        }
+
+    def handle_field_click(self, clicked_field):
+        if self.selected_piece is None:
+            #  FIXME do nothing if a random field is clicked
+            pass
+        else:
+            possible_move_locatinos_for_selected_piece = [
+                move.new_cords
+                for move in self.feasible_player_moves(self.selected_piece.color)[self.selected_piece]
+            ]
+            if clicked_field.location in possible_move_locatinos_for_selected_piece:
+                pass
+                #   start here later
 
 
 def main():
@@ -139,6 +164,7 @@ def main():
                     game.handle_piece_click(clicked_piece)
 
                 else:
+                    game.handle_field_click(clicked_field)
                     if game.selected_piece is not None:
                         possible_moving_locations = {
                             move.new_cords: move
