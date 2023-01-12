@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 from field import Field
-from constants import BEIGE, BROWN, FIELD_SIZE
+from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS
 from errors import NonexistingFieldCallError
 
 
@@ -29,6 +29,15 @@ class Piece:
         else:
             self.image_dict_ind = 'BK'
 
+    def eligible_for_promotion_after_move(self, move):
+        '''Checks whether making the given move, the piece
+        will land on the last rank, resulting in it being promoted to a king
+        '''
+        new_y = move.new_cords[1]
+        if new_y in (0, NUM_OF_ROWS - 1) and not self.king:
+            return True
+        return False
+
     @property
     def move_constant(self):
         '''The value of y added to the location of a piece
@@ -42,61 +51,56 @@ class Piece:
         else:
             return -1 if self.color == 'white' else 1
 
-    def set_possible_moving_directions_x(self):
-        '''sets the parameters which determine whether a piece can move
-        to a square with a higher and lower x than its current square
-        '''
-        if self.x == 7:
-            self.can_move_pos_x = False
+    def can_move_plus_x(self, attack=False):
+        if attack:
+            cols_where_cannot = [NUM_OF_COLUMNS - 2, NUM_OF_COLUMNS - 1]
         else:
-            self.can_move_pos_x = True
+            cols_where_cannot = [NUM_OF_COLUMNS - 1]
+        return self.x not in cols_where_cannot
 
-        if self.x == 0:
-            self.can_move_neg_x = False
+    def can_move_minus_x(self, attack=False):
+        if attack:
+            cols_where_cannot = [0, 1]
         else:
-            self.can_move_neg_x = True
+            cols_where_cannot = [0]
+        return self.x not in cols_where_cannot
 
-    def set_possible_moving_directions_y(self):
-        '''sets the parameters which determine whether a piece can move
-        to a square with a higher and lower x than its current square
-        '''
-        if self.king:
-            if self.y == 7:
-                self.can_move_pos_y = False
-                self.can_move_neg_y = True
-            elif self.y == 0:
-                self.can_move_neg_y = False
-                self.can_move_pos_y = True
-            else:
-                self.can_move_pos_y = True
-                self.can_move_neg_y = True
+    def can_move_plus_y(self, attack=False):
+        if self.move_constant == -1:
+            return False
+        if attack:
+            rows_where_cannot = [NUM_OF_ROWS - 2, NUM_OF_ROWS - 1]
         else:
-            if self.move_constant == 1:
-                self.can_move_pos_y = True
-                self.can_move_neg_y = False
-            else:
-                self.can_move_pos_y = False
-                self.can_move_neg_y = True
+            rows_where_cannot = [NUM_OF_ROWS - 1]
+        return self.y not in rows_where_cannot
+
+    def can_move_minus_y(self, attack=False):
+        # FIXME
+        if self.move_constant == 1:
+            return False
+        if attack:
+            rows_where_cannot = [0, 1]
+        else:
+            rows_where_cannot = [0]
+        return self.y not in rows_where_cannot
 
     def all_possible_non_attacking_moves(self):
         '''returns the basic forward(or backward if it's a king) moves a piece
         could possibly make, not taking in consideration whether they're legal
         '''
         moves = list()
-        self.set_possible_moving_directions_x()
-        self.set_possible_moving_directions_y()
         x = self.x
         y = self.y
 
-        if self.can_move_pos_x:
-            if self.can_move_pos_y:
+        if self.can_move_plus_x():
+            if self.can_move_plus_y():
                 moves.append(Move(False, (x, y), (x + 1, y + 1), self))
-            if self.can_move_neg_y:
+            if self.can_move_minus_y():
                 moves.append(Move(False, (x, y), (x + 1, y - 1), self))
-        if self.can_move_neg_x:
-            if self.can_move_pos_y:
+        if self.can_move_minus_x():
+            if self.can_move_plus_y():
                 moves.append(Move(False, (x, y), (x - 1, y + 1), self))
-            if self.can_move_neg_y:
+            if self.can_move_minus_y():
                 moves.append(Move(False, (x, y), (x - 1, y - 1), self))
         return moves
 
@@ -115,9 +119,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y+1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant == -1:
-            return False
-        elif self.x in (6, 7) or self.y in (6, 7):
+        if not (self.can_move_plus_x(attack=True) and self.can_move_plus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -137,9 +139,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant == 1:
-            return False
-        elif self.x in (6, 7) or self.y in (0, 1):
+        if not (self.can_move_plus_x(attack=True) and self.can_move_minus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -159,9 +159,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant == -1:
-            return False
-        elif self.x in (0, 1) or self.y in (6, 7):
+        if not (self.can_move_minus_x(attack=True) and self.can_move_plus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -181,9 +179,7 @@ class Piece:
         '''checks whether it's possible to attack a field with coordinates (x+1, y-1)
         if an enemy piece is on the field and the field behind it is empty, returns True
         '''
-        if self.move_constant == 1:
-            return False
-        elif self.x in (0, 1) or self.y in (0, 1):
+        if not (self.can_move_minus_x(attack=True) and self.can_move_minus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(

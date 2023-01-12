@@ -125,18 +125,72 @@ class Game:
             if self.can_piece_move(piece)
         }
 
+    @staticmethod
+    def find_move_by_move_location(location, piece_move_list):
+        for move in piece_move_list:
+            if move.new_cords == location:
+                return move
+        raise IndexError('Tried to reach a nonexisting move')
+
+    def handle_passive_move(self, move):
+        self.board.move_piece(self.selected_piece, move)
+        if self.selected_piece.eligible_for_promotion_after_move(move):
+            self.selected_piece.promote()
+        self.draw_board()
+        self.change_turn()
+        self.update_possible_player_moves()
+        self.selected_piece = None
+
+    def calculate_jumped_piece(self, move):
+        old_x, old_y = move.old_cords
+        next_x, next_y = move.new_cords
+        jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
+        piece = self.board.get_field_by_location((jumped_x, jumped_y)).piece
+        return piece
+
+    def handle_attacking_move(self, move):
+        attacking_piece = move.piece
+        self.selected_piece = attacking_piece  # could delete this line later?
+        jumped_piece = self.calculate_jumped_piece(move)
+        self.board.delete_piece(jumped_piece)
+        self.board.move_piece(attacking_piece, move)
+        if attacking_piece.eligible_for_promotion_after_move(move):
+            attacking_piece.promote()
+        self.update_player_pieces()
+        self.draw_board()
+        if not attacking_piece.all_legal_attacking_moves(self.board):
+            self.change_turn()
+        self.selected_piece = None
+        return
+
     def handle_field_click(self, clicked_field):
         if self.selected_piece is None:
             #  FIXME do nothing if a random field is clicked
             pass
         else:
+            possible_moves_for_selected_piece = [
+                move for move in
+                self.feasible_player_moves(self.selected_piece.color)[self.selected_piece]
+            ]
+
             possible_move_locatinos_for_selected_piece = [
                 move.new_cords
-                for move in self.feasible_player_moves(self.selected_piece.color)[self.selected_piece]
-            ]
+                for move in possible_moves_for_selected_piece]
+
             if clicked_field.location in possible_move_locatinos_for_selected_piece:
-                pass
-                #   start here later
+                move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves_for_selected_piece)
+                if move_to_make.attacking:
+                    self.handle_attacking_move(move_to_make)
+
+                else:
+                    self.handle_passive_move(move_to_make)
+
+    def interpret_clicked_pixel_location(self, location):
+        x, y = location
+        clicked_field_location = (int(x // FIELD_SIZE), int(y // FIELD_SIZE))
+        clicked_field = self.board.get_field_by_location(clicked_field_location)
+        clicked_piece = clicked_field.piece
+        return clicked_field, clicked_piece
 
 
 def main():
@@ -155,51 +209,14 @@ def main():
                 exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                clicked_pixel_x, clicked_pixel_y = pygame.mouse.get_pos()
-                clicked_field_location = (int(clicked_pixel_x // FIELD_SIZE), int(clicked_pixel_y // FIELD_SIZE))
-                clicked_field = game.board.get_field_by_location(clicked_field_location)
-                clicked_piece = clicked_field.piece
+                mouse_position = pygame.mouse.get_pos()
+                clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
 
                 if clicked_piece is not None:
                     game.handle_piece_click(clicked_piece)
 
                 else:
                     game.handle_field_click(clicked_field)
-                    if game.selected_piece is not None:
-                        possible_moving_locations = {
-                            move.new_cords: move
-                            for move in game.selected_piece.all_possible_legal_moves(game.board)
-                        }
-
-                        if clicked_field.location in possible_moving_locations.keys():
-                            move_to_be_made = possible_moving_locations[clicked_field.location]
-                            game.board.move_piece(game.selected_piece, move_to_be_made)
-                            new_y = move_to_be_made.new_cords[1]
-                            game.draw_board()
-                            if new_y in (0, 7):
-                                game.selected_piece.promote()
-                                game.draw_board()
-
-                            if move_to_be_made.attacking:
-                                old_x, old_y = move_to_be_made.old_cords
-                                next_x, next_y = move_to_be_made.new_cords
-                                jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
-                                piece_to_take = game.board.get_field_by_location((jumped_x, jumped_y)).piece
-                                game.board.delete_piece(piece_to_take)
-                                game.board.move_piece(game.selected_piece, move_to_be_made)
-                                game.draw_board()
-                                while game.selected_piece.all_legal_attacking_moves(game.board):
-                                    break
-                                game.selected_piece = None
-                                game.change_turn()
-                                game.update_player_pieces()
-
-                            else:
-                                if not game.player_has_to_attack(game.turn):
-                                    game.selected_piece = None
-                                    game.change_turn()
-                                else:
-                                    game.selected_piece = None
 
         pygame.display.update()
         clock.tick(MAX_FPS)
