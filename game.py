@@ -1,9 +1,9 @@
 import pygame
 from sys import exit
-from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, BEIGE, TITLE_RECT_MID_X,
-                       TITLE_RECT_MID_Y, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT, LIGHT_BROWN)
+from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN)
 from piece_move_board import Board, Piece
 from player import Player
+from gui import draw_menu
 
 
 class Game:
@@ -189,50 +189,6 @@ class Game:
         return clicked_field, clicked_piece
 
 
-def draw_loading_screen(window):
-    fonts = load_fonts()
-    title_font = fonts['title_font']
-    autor_font = fonts['autor_font']
-    button_font = fonts['button_font']
-
-    window.fill(BEIGE)
-    title_surf = title_font.render('Checkers', True, (0, 0, 0))
-    title_rect = title_surf.get_rect(center=(TITLE_RECT_MID_X, TITLE_RECT_MID_Y))
-    window.blit(title_surf, title_rect)
-
-    autor_surf = autor_font.render('by M. Bienkowski', True, (0, 0, 0))
-    autor_rect = autor_surf.get_rect(topleft=(TITLE_RECT_MID_X + 20, TITLE_RECT_MID_Y + 50))
-    window.blit(autor_surf, autor_rect)
-
-    pvp_button_surf = button_font.render('Player vs Player', True, (0, 0, 0))
-    pvp_button_outline_rect = pygame.Rect(title_rect.left + 20, title_rect.bottom + 50, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
-    pvp_button_rect = pvp_button_surf.get_rect(center=pvp_button_outline_rect.center)
-    pygame.draw.rect(window, LIGHT_BROWN, pvp_button_outline_rect)
-    window.blit(pvp_button_surf, pvp_button_rect)
-
-    pvb_button_outline_rect = pygame.Rect(title_rect.left + 20, pvp_button_outline_rect.bottom + 30, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
-    pvb_button_surf = button_font.render('Player vs Bot', True, (0, 0, 0))
-    pvb_button_rect = pvb_button_surf.get_rect(center=pvb_button_outline_rect.center)
-    pygame.draw.rect(window, LIGHT_BROWN, pvb_button_outline_rect)
-    window.blit(pvb_button_surf, pvb_button_rect)
-
-    bvb_button_outline_rect = pygame.Rect(title_rect.left + 20, pvb_button_outline_rect.bottom + 30, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
-    bvb_button_surf = button_font.render('Bot vs Bot', True, (0, 0, 0))
-    bvb_button_rect = bvb_button_surf.get_rect(center=bvb_button_outline_rect.center)
-    pygame.draw.rect(window, LIGHT_BROWN, bvb_button_outline_rect)
-    window.blit(bvb_button_surf, bvb_button_rect)
-    return pvp_button_outline_rect, pvb_button_outline_rect, bvb_button_outline_rect
-
-
-def load_fonts():
-    fonts = {
-        'title_font': pygame.font.Font('fonts/coolvetica_rg.otf', 80),
-        'autor_font': pygame.font.Font('fonts/coolvetica_rg.otf', 20),
-        'button_font': pygame.font.Font('fonts/coolvetica_rg.otf', 40)
-    }
-    return fonts
-
-
 def main():
     pygame.init()
     game_running = False
@@ -242,7 +198,7 @@ def main():
 
     while True:
         if not game_running:
-            pvp_b, pvb_b, bvb_b = draw_loading_screen(screen)
+            pvp_button, pvb_button, bvb_button = draw_menu(screen)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -250,7 +206,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_position = pygame.mouse.get_pos()
-                    if pvp_b.collidepoint(mouse_position):
+                    if pvp_button.collidepoint(mouse_position):
                         game_running = True
                         game = Game(screen)
                         game.draw_board()
