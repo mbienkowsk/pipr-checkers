@@ -3,7 +3,7 @@ from sys import exit
 from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN)
 from piece_move_board import Board, Piece
 from player import Player
-from gui import draw_menu
+from gui import draw_menu, draw_game_over_screen
 
 
 class Game:
@@ -18,13 +18,19 @@ class Game:
         self.selected_piece = None
         self.update_player_pieces()
         self.update_possible_player_moves()
-        # TODO implement move counter
+        self.moves_without_attacks = 0
+        self.is_over = False
 
     def load_images(self):
+        #   tone down the alpha value of the white pieces so they don't stand out after the game over animation
+        WP = pygame.transform.scale(pygame.image.load('images/white_piece.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING))
+        WP.set_alpha(200)
+        WK = pygame.transform.scale(pygame.image.load('images/white_king.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING))
+        WK.set_alpha(200)
         self.images = {
+            'WP': WP,
             'BK': pygame.transform.scale(pygame.image.load('images/black_king.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING)),
-            'WK': pygame.transform.scale(pygame.image.load('images/white_king.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING)),
-            'WP': pygame.transform.scale(pygame.image.load('images/white_piece.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING)),
+            'WK': WK,
             'BP': pygame.transform.scale(pygame.image.load('images/black_piece.png').convert_alpha(), (FIELD_SIZE - PIECE_PADDING, FIELD_SIZE - PIECE_PADDING))
         }
 
@@ -95,6 +101,14 @@ class Game:
                     return True
         return False
 
+    def player_has_moving_options(self, color):
+        player = self.player_by_color(color)
+        player_dict = self.possible_move_dict[player]
+        for value in player_dict.values():
+            if len(value) > 0:
+                return True
+        return False
+
     def can_piece_move(self, piece):
         '''Determines whether a piece can be moved during a player's turn
         If the piece can't attack and another one of its color can,
@@ -138,7 +152,9 @@ class Game:
         self.draw_board()
         self.change_turn()
         self.update_possible_player_moves()
-        self.selected_piece = None
+        if not self.player_has_moving_options(self.turn):
+            self.is_over = True
+            self.selected_piece = None
 
     def calculate_jumped_piece(self, move):
         old_x, old_y = move.old_cords
@@ -149,16 +165,20 @@ class Game:
 
     def handle_attacking_move(self, move):
         attacking_piece = move.piece
-        self.selected_piece = attacking_piece  # could delete this line later?
+        self.selected_piece = attacking_piece
         jumped_piece = self.calculate_jumped_piece(move)
         self.board.delete_piece(jumped_piece)
         self.board.move_piece(attacking_piece, move)
         if attacking_piece.eligible_for_promotion_after_move(move):
             attacking_piece.promote()
         self.update_player_pieces()
+        self.update_possible_player_moves()
         self.draw_board()
         if not attacking_piece.all_legal_attacking_moves(self.board):
             self.change_turn()
+            if not self.player_has_moving_options(self.turn):
+                self.is_over = True
+
         self.selected_piece = None
         return
 
@@ -177,9 +197,11 @@ class Game:
                 move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves_for_selected_piece)
                 if move_to_make.attacking:
                     self.handle_attacking_move(move_to_make)
+                    self.moves_without_attacks = 0
 
                 else:
                     self.handle_passive_move(move_to_make)
+                    self.moves_without_attacks += 1
 
     def interpret_clicked_pixel_location(self, location):
         x, y = location
@@ -192,25 +214,40 @@ class Game:
 def main():
     pygame.init()
     game_running = False
+    menu_active = True
+    game_over_screen_active = False
 
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 
     while True:
         if not game_running:
-            pvp_button, pvb_button, bvb_button = draw_menu(screen)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
+            if menu_active:
+                pvp_button, pvb_button, bvb_button = draw_menu(screen)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        exit()
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_position = pygame.mouse.get_pos()
-                    if pvp_button.collidepoint(mouse_position):
-                        game_running = True
-                        game = Game(screen)
-                        game.draw_board()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_position = pygame.mouse.get_pos()
+                        if pvp_button.collidepoint(mouse_position):
+                            game_running = True
+                            menu_active = False
+                            game = Game(screen)
+                            game.draw_board()
 
+            elif game_over_screen_active:
+                draw_game_over_screen(screen)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        exit()
+
+                    if event.type in (pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN):
+                        game_over_screen_active = False
+                        menu_active = True
+                        draw_menu(screen)
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -226,6 +263,10 @@ def main():
 
                     else:
                         game.handle_field_click(clicked_field)
+
+            if game.moves_without_attacks >= 50 or game.is_over:
+                game_running = False
+                game_over_screen_active = True
 
         pygame.display.update()
         clock.tick(MAX_FPS)

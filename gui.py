@@ -61,12 +61,12 @@ def draw_game_over_screen(window):
 
     go_screen = pygame.Surface((WIN_WIDTH, WIN_HEIGHT), pygame.SRCALPHA)
     go_screen.fill(BEIGE)
-    go_screen.set_alpha(180)
+    go_screen.set_alpha(40)
 
     game_over_surf = game_over_font.render('Game Over!', True, (0, 0, 0))
     game_over_rect = game_over_surf.get_rect(center=(WIN_WIDTH / 2, (WIN_HEIGHT / 2) - 50))
 
-    message_surf = message_font.render('Press enter to continue to menu.', True, (0, 0, 0))
+    message_surf = message_font.render('Press any key to continue to menu.', True, (0, 0, 0))
     message_rect = message_surf.get_rect(top=game_over_rect.bottom + 15, centerx=game_over_rect.centerx)
 
     window.blit(go_screen, (0, 0))
