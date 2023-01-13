@@ -3,6 +3,8 @@ from constants import (WIN_WIDTH, WIN_HEIGHT, BEIGE, TITLE_RECT_MID_X, TITLE_REC
 
 
 def load_fonts():
+    '''Loads the font from the fonts folder and creates different pygame.Font
+    objects with different sizes. Each size is needed for a different text prompt.'''
     fonts = {
         'title_font': pygame.font.Font('fonts/coolvetica_rg.otf', 80),
         'autor_font': pygame.font.Font('fonts/coolvetica_rg.otf', 20),
@@ -66,7 +68,7 @@ def draw_game_over_screen(window):
     game_over_surf = game_over_font.render('Game Over!', True, (0, 0, 0))
     game_over_rect = game_over_surf.get_rect(center=(WIN_WIDTH / 2, (WIN_HEIGHT / 2) - 50))
 
-    message_surf = message_font.render('Press any key to continue to menu.', True, (0, 0, 0))
+    message_surf = message_font.render('Press any key to continue to the menu.', True, (0, 0, 0))
     message_rect = message_surf.get_rect(top=game_over_rect.bottom + 15, centerx=game_over_rect.centerx)
 
     window.blit(go_screen, (0, 0))

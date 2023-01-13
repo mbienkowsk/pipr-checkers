@@ -4,16 +4,17 @@ from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING
 from piece_move_board import Board, Piece
 from player import Player
 from gui import draw_menu, draw_game_over_screen
+from random import randint
 
 
 class Game:
 
-    def __init__(self, screen) -> None:
+    def __init__(self, screen, players) -> None:
         self.board = Board()
         self.screen = screen
         self.possible_move_dict = {}
-        self.players = [Player('white'), Player('black')]
         self.load_images()
+        self.players = players
         self.turn = 'white'
         self.selected_piece = None
         self.update_player_pieces()
@@ -182,19 +183,24 @@ class Game:
         self.selected_piece = None
         return
 
+    def feasible_locations_and_moves_for_piece(self, piece):
+        possible_moves = [
+            move for move in
+            self.feasible_player_moves(piece.color)[piece]
+        ]
+
+        possible_move_locations = [
+            move.new_cords
+            for move in possible_moves
+        ]
+        return possible_move_locations, possible_moves
+
     def handle_field_click(self, clicked_field):
         if self.selected_piece is not None:
-            possible_moves_for_selected_piece = [
-                move for move in
-                self.feasible_player_moves(self.selected_piece.color)[self.selected_piece]
-            ]
+            possible_move_locations, possible_moves = self.feasible_locations_and_moves_for_piece(self.selected_piece)
 
-            possible_move_locatinos_for_selected_piece = [
-                move.new_cords
-                for move in possible_moves_for_selected_piece]
-
-            if clicked_field.location in possible_move_locatinos_for_selected_piece:
-                move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves_for_selected_piece)
+            if clicked_field.location in possible_move_locations:
+                move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves)
                 if move_to_make.attacking:
                     self.handle_attacking_move(move_to_make)
                     self.moves_without_attacks = 0
@@ -234,7 +240,12 @@ def main():
                         if pvp_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen)
+                            game = Game(screen, [Player('white'), Player('black')])
+                            game.draw_board()
+                        if pvb_button.collidepoint(mouse_position):
+                            game_running = True
+                            menu_active = False
+                            game = Game(screen, [Player('white'), Player('black', True)])
                             game.draw_board()
 
             elif game_over_screen_active:
@@ -249,6 +260,13 @@ def main():
                         menu_active = True
                         draw_menu(screen)
         else:
+            if game.player_by_color(game.turn).ai:
+                piece = game.board.get_field_by_location((1, 2)).piece
+                game.handle_piece_click(piece)
+                locations = game.feasible_locations_and_moves_for_piece(piece)[0]
+                field = game.board.get_field_by_location(locations[randint(0, len(locations) - 1)])
+                game.handle_field_click(field)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
