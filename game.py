@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from constants import WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN
+from constants import WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, BEIGE, TITLE_RECT_MID_X, TITLE_RECT_MID_Y, BUTTON_RECT_WIDTH, BUTTON_RECT_HEIGHT
 from piece_move_board import Board, Piece
 from player import Player
 
@@ -17,6 +17,7 @@ class Game:
         self.selected_piece = None
         self.update_player_pieces()
         self.update_possible_player_moves()
+        # TODO implement move counter
 
     def load_images(self):
         self.images = {
@@ -106,12 +107,9 @@ class Game:
 
     def handle_piece_click(self, clicked_piece):
         self.update_possible_player_moves()
-        if clicked_piece.color == self.turn:
-            if self.can_piece_move(clicked_piece):
-                self.show_possible_moves(clicked_piece)
-                self.selected_piece = clicked_piece
-            else:
-                self.selected_piece = None
+        if clicked_piece.color == self.turn and self.can_piece_move(clicked_piece):
+            self.show_possible_moves(clicked_piece)
+            self.selected_piece = clicked_piece
         else:
             self.selected_piece = None
             self.draw_board()
@@ -164,10 +162,7 @@ class Game:
         return
 
     def handle_field_click(self, clicked_field):
-        if self.selected_piece is None:
-            #  FIXME do nothing if a random field is clicked
-            pass
-        else:
+        if self.selected_piece is not None:
             possible_moves_for_selected_piece = [
                 move for move in
                 self.feasible_player_moves(self.selected_piece.color)[self.selected_piece]
@@ -193,13 +188,60 @@ class Game:
         return clicked_field, clicked_piece
 
 
+def draw_loading_screen(window):
+    fonts = load_fonts()
+    title_font = fonts['title_font']
+    autor_font = fonts['autor_font']
+    button_font = fonts['button_font']
+
+    window.fill(BEIGE)
+    title_surf = title_font.render('Checkers', True, (0, 0, 0))
+    title_rect = title_surf.get_rect(center=(TITLE_RECT_MID_X, TITLE_RECT_MID_Y))
+    window.blit(title_surf, title_rect)
+
+    autor_surf = autor_font.render('by M. Bienkowski', True, (0, 0, 0))
+    autor_rect = autor_surf.get_rect(topleft=(TITLE_RECT_MID_X + 20, TITLE_RECT_MID_Y + 50))
+    window.blit(autor_surf, autor_rect)
+    # pygame.draw.rect(window, (BROWN), autor_rect)
+
+    # pvp_button_rect = pygame.Rect(160, 280, BUTTON_RECT_WIDTH, BUTTON_RECT_HEIGHT)
+    # pygame.draw.rect(window, BROWN, pvp_button_rect)
+    pvp_button_surf = button_font.render('Player vs Player', True, (0, 0, 0))
+    pvp_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, title_rect.centery + 170))
+    pygame.draw.rect(window, BROWN, pvp_button_rect)
+    pygame.draw.rect(window, BROWN, pvp_button_rect, 150)
+    window.blit(pvp_button_surf, pvp_button_rect)
+
+    pvb_button_surf = button_font.render('Player vs Bot', True, (0, 0, 0))
+    pvb_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, pvp_button_rect.bottom + 50))
+    pygame.draw.rect(window, BROWN, pvb_button_rect)
+    pygame.draw.rect(window, BROWN, pvb_button_rect, 150)
+    window.blit(pvb_button_surf, pvb_button_rect)
+
+    bvb_button_surf = button_font.render('Bot vs Bot', True, (0, 0, 0))
+    bvb_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, pvb_button_rect.bottom + 50))
+    pygame.draw.rect(window, BROWN, bvb_button_rect)
+    pygame.draw.rect(window, BROWN, bvb_button_rect, 150)
+    window.blit(bvb_button_surf, bvb_button_rect)
+
+def load_fonts():
+    fonts = {
+        'title_font': pygame.font.Font('fonts/coolvetica_rg.otf', 80),
+        'autor_font': pygame.font.Font('fonts/coolvetica_rg.otf', 20),
+        'button_font': pygame.font.Font('fonts/coolvetica_rg.otf', 40)
+    }
+    return fonts
+
+
 def main():
     pygame.init()
 
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-    game = Game(screen)
-    game.draw_board()
+    draw_loading_screen(screen)
+
+    # game = Game(screen)
+    # game.draw_board()
 
     while True:
 
@@ -210,13 +252,14 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_position = pygame.mouse.get_pos()
-                clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
+                print(mouse_position)
+            #     clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
 
-                if clicked_piece is not None:
-                    game.handle_piece_click(clicked_piece)
+            #     if clicked_piece is not None:
+            #         game.handle_piece_click(clicked_piece)
 
-                else:
-                    game.handle_field_click(clicked_field)
+            #     else:
+            #         game.handle_field_click(clicked_field)
 
         pygame.display.update()
         clock.tick(MAX_FPS)

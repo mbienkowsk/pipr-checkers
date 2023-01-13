@@ -12,5 +12,5 @@
 - tymczasowe argumenty w set_possible_moving_directions - czy ma to w ogole racje bytu na blokach?
 
 
-## Ewentualna refaktoryzacja:
-- Move zamiast cords przyjmuje instancję pola? Ułatwi w highlightowaniu
+## TODO
+- zaimplementować licznik ruchów bez bicia na remis
