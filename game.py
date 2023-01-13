@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
-from constants import WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, BEIGE, TITLE_RECT_MID_X, TITLE_RECT_MID_Y, BUTTON_RECT_WIDTH, BUTTON_RECT_HEIGHT
+from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, BEIGE, TITLE_RECT_MID_X,
+                       TITLE_RECT_MID_Y, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT, LIGHT_BROWN)
 from piece_move_board import Board, Piece
 from player import Player
 
@@ -202,27 +203,26 @@ def draw_loading_screen(window):
     autor_surf = autor_font.render('by M. Bienkowski', True, (0, 0, 0))
     autor_rect = autor_surf.get_rect(topleft=(TITLE_RECT_MID_X + 20, TITLE_RECT_MID_Y + 50))
     window.blit(autor_surf, autor_rect)
-    # pygame.draw.rect(window, (BROWN), autor_rect)
 
-    # pvp_button_rect = pygame.Rect(160, 280, BUTTON_RECT_WIDTH, BUTTON_RECT_HEIGHT)
-    # pygame.draw.rect(window, BROWN, pvp_button_rect)
     pvp_button_surf = button_font.render('Player vs Player', True, (0, 0, 0))
-    pvp_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, title_rect.centery + 170))
-    pygame.draw.rect(window, BROWN, pvp_button_rect)
-    pygame.draw.rect(window, BROWN, pvp_button_rect, 150)
+    pvp_button_outline_rect = pygame.Rect(title_rect.left + 20, title_rect.bottom + 50, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
+    pvp_button_rect = pvp_button_surf.get_rect(center=pvp_button_outline_rect.center)
+    pygame.draw.rect(window, LIGHT_BROWN, pvp_button_outline_rect)
     window.blit(pvp_button_surf, pvp_button_rect)
 
+    pvb_button_outline_rect = pygame.Rect(title_rect.left + 20, pvp_button_outline_rect.bottom + 30, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
     pvb_button_surf = button_font.render('Player vs Bot', True, (0, 0, 0))
-    pvb_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, pvp_button_rect.bottom + 50))
-    pygame.draw.rect(window, BROWN, pvb_button_rect)
-    pygame.draw.rect(window, BROWN, pvb_button_rect, 150)
+    pvb_button_rect = pvb_button_surf.get_rect(center=pvb_button_outline_rect.center)
+    pygame.draw.rect(window, LIGHT_BROWN, pvb_button_outline_rect)
     window.blit(pvb_button_surf, pvb_button_rect)
 
+    bvb_button_outline_rect = pygame.Rect(title_rect.left + 20, pvb_button_outline_rect.bottom + 30, BUTTON_OUTLINE_WIDTH, BUTTON_OUTLINE_HEIGHT)
     bvb_button_surf = button_font.render('Bot vs Bot', True, (0, 0, 0))
-    bvb_button_rect = pvp_button_surf.get_rect(center=(title_rect.centerx, pvb_button_rect.bottom + 50))
-    pygame.draw.rect(window, BROWN, bvb_button_rect)
-    pygame.draw.rect(window, BROWN, bvb_button_rect, 150)
+    bvb_button_rect = bvb_button_surf.get_rect(center=bvb_button_outline_rect.center)
+    pygame.draw.rect(window, LIGHT_BROWN, bvb_button_outline_rect)
     window.blit(bvb_button_surf, bvb_button_rect)
+    return pvp_button_outline_rect, pvb_button_outline_rect, bvb_button_outline_rect
+
 
 def load_fonts():
     fonts = {
@@ -235,31 +235,41 @@ def load_fonts():
 
 def main():
     pygame.init()
+    game_running = False
 
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-    draw_loading_screen(screen)
-
-    # game = Game(screen)
-    # game.draw_board()
 
     while True:
+        if not game_running:
+            pvp_b, pvb_b, bvb_b = draw_loading_screen(screen)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_position = pygame.mouse.get_pos()
+                    if pvp_b.collidepoint(mouse_position):
+                        game_running = True
+                        game = Game(screen)
+                        game.draw_board()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_position = pygame.mouse.get_pos()
-                print(mouse_position)
-            #     clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
 
-            #     if clicked_piece is not None:
-            #         game.handle_piece_click(clicked_piece)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_position = pygame.mouse.get_pos()
+                    clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
 
-            #     else:
-            #         game.handle_field_click(clicked_field)
+                    if clicked_piece is not None:
+                        game.handle_piece_click(clicked_piece)
+
+                    else:
+                        game.handle_field_click(clicked_field)
 
         pygame.display.update()
         clock.tick(MAX_FPS)
