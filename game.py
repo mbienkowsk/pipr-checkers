@@ -12,13 +12,10 @@ class Game:
     def __init__(self, screen, players) -> None:
         self.board = Board()
         self.screen = screen
-        self.possible_move_dict = {}
         self.load_images()
         self.players = players
         self.turn = 'white'
         self.selected_piece = None
-        self.update_player_pieces()
-        self.update_possible_player_moves()
         self.moves_without_attacks = 0
         self.is_over = False
 
@@ -76,68 +73,22 @@ class Game:
     def change_turn(self):
         self.turn = 'white' if self.turn == 'black' else 'black'
 
-    def update_player_pieces(self):
-        for player in self.players:
-            player.pieces.clear()
-
-        for field in self.board.one_dimensional_field_list:
-            if field.is_taken():
-                self.player_by_color(field.piece.color).pieces.append(field.piece)
-
-    def update_possible_player_moves(self):
-        self.possible_move_dict = {
-            player: {
-                piece: piece.all_possible_legal_moves(self.board)
-                for piece in player.pieces
-            }
-            for player in self.players
-        }
-
-    def player_has_to_attack(self, color):
-        player = self.player_by_color(color)
-        player_dict = self.possible_move_dict[player]
-        for value in player_dict.values():
-            for move in value:
-                if move.attacking:
-                    return True
-        return False
-
     def player_has_moving_options(self, color):
-        player = self.player_by_color(color)
-        player_dict = self.possible_move_dict[player]
+        player_dict = self.board.moves_by_colors[color]
         for value in player_dict.values():
             if len(value) > 0:
                 return True
         return False
 
-    def can_piece_move(self, piece):
-        '''Determines whether a piece can be moved during a player's turn
-        If the piece can't attack and another one of its color can,
-        returns False. Else, returns True
-        '''
-        if self.player_has_to_attack(piece.color):
-            if not piece.all_legal_attacking_moves(self.board):
-                return False
-            #   have to come back to implement multiple jumps in a row
-        return True
-
     def handle_piece_click(self, clicked_piece):
-        self.update_possible_player_moves()
-        if clicked_piece.color == self.turn and self.can_piece_move(clicked_piece):
+        self.board.update_pieces_by_colors()
+        self.board.update_possible_moves_by_colors()
+        if clicked_piece.color == self.turn and self.board.can_piece_move(clicked_piece):
             self.show_possible_moves(clicked_piece)
             self.selected_piece = clicked_piece
         else:
             self.selected_piece = None
             self.draw_board()
-
-    def feasible_player_moves(self, color):
-        self.update_possible_player_moves()
-        move_dictionary = self.possible_move_dict[self.player_by_color(color)]
-        return {
-            piece: move_dictionary[piece]
-            for piece in move_dictionary.keys()
-            if self.can_piece_move(piece)
-        }
 
     @staticmethod
     def find_move_by_move_location(location, piece_move_list):
@@ -152,10 +103,10 @@ class Game:
             self.selected_piece.promote()
         self.draw_board()
         self.change_turn()
-        self.update_possible_player_moves()
+        self.board.update_possible_moves_by_colors()
         if not self.player_has_moving_options(self.turn):
             self.is_over = True
-            self.selected_piece = None
+        self.selected_piece = None
 
     def calculate_jumped_piece(self, move):
         old_x, old_y = move.old_cords
@@ -172,8 +123,10 @@ class Game:
         self.board.move_piece(attacking_piece, move)
         if attacking_piece.eligible_for_promotion_after_move(move):
             attacking_piece.promote()
-        self.update_player_pieces()
-        self.update_possible_player_moves()
+
+        self.board.update_pieces_by_colors()
+        self.board.update_possible_moves_by_colors()
+
         self.draw_board()
         if not attacking_piece.all_legal_attacking_moves(self.board):
             self.change_turn()
@@ -183,21 +136,9 @@ class Game:
         self.selected_piece = None
         return
 
-    def feasible_locations_and_moves_for_piece(self, piece):
-        possible_moves = [
-            move for move in
-            self.feasible_player_moves(piece.color)[piece]
-        ]
-
-        possible_move_locations = [
-            move.new_cords
-            for move in possible_moves
-        ]
-        return possible_move_locations, possible_moves
-
     def handle_field_click(self, clicked_field):
         if self.selected_piece is not None:
-            possible_move_locations, possible_moves = self.feasible_locations_and_moves_for_piece(self.selected_piece)
+            possible_move_locations, possible_moves = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)
 
             if clicked_field.location in possible_move_locations:
                 move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves)
@@ -263,7 +204,7 @@ def main():
             if game.player_by_color(game.turn).ai:
                 piece = game.board.get_field_by_location((1, 2)).piece
                 game.handle_piece_click(piece)
-                locations = game.feasible_locations_and_moves_for_piece(piece)[0]
+                locations = game.board.feasible_locations_and_moves_for_piece(piece)[0]
                 field = game.board.get_field_by_location(locations[randint(0, len(locations) - 1)])
                 game.handle_field_click(field)
 

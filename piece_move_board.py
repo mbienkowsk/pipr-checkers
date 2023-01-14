@@ -277,6 +277,10 @@ class Board:
         self._fields = None
         self._setup_fields()
         self._setup_pieces()
+        self.pieces_by_colors = dict()
+        self.update_pieces_by_colors()
+        self.moves_by_colors = dict()
+        self.update_possible_moves_by_colors()
 
     def get_field_by_location(self, location) -> 'Field':
         for row in self.fields:
@@ -349,3 +353,68 @@ class Board:
             for field in row:
                 field_list.append(field)
         return field_list
+
+    def update_pieces_by_colors(self):
+        pieces_by_colors = {
+            'white': [],
+            'black': []
+        }
+        for field in self.one_dimensional_field_list:
+            if field.is_taken():
+                current_piece = field.piece
+                pieces_by_colors[current_piece.color].append(current_piece)
+        self.pieces_by_colors = pieces_by_colors
+
+    def all_white_pieces(self):
+        return self.pieces_by_colors['white']
+
+    def all_black_pieces(self):
+        return self.pieces_by_colors['black']
+
+    def player_has_to_attack(self, color):
+        player_dict = self.moves_by_colors[color]
+        for value in player_dict.values():
+            for move in value:
+                if move.attacking:
+                    return True
+        return False
+
+    def update_possible_moves_by_colors(self):
+
+        moves_by_colors = {
+            'white': {},
+            'black': {}
+        }
+
+        for piece in self.all_white_pieces():
+            moves_by_colors['white'][piece] = piece.all_possible_legal_moves(self)
+        for piece in self.all_black_pieces():
+            moves_by_colors['black'][piece] = piece.all_possible_legal_moves(self)
+
+        self.moves_by_colors = moves_by_colors
+
+        if self.player_has_to_attack('white'):
+            for piece in self.all_white_pieces():
+                moves_by_colors['white'][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+
+        if self.player_has_to_attack('black'):
+            for piece in self.all_black_pieces():
+                moves_by_colors['black'][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+
+        self.moves_by_colors = moves_by_colors
+
+    def feasible_locations_and_moves_for_piece(self, piece):
+        self.update_possible_moves_by_colors()
+        moves = self.moves_by_colors[piece.color][piece]
+        locations = [move.new_cords for move in moves]
+        return locations, moves
+
+    def can_piece_move(self, piece):
+        '''Determines whether a piece can be moved during a player's turn
+        If the piece can't attack and another one of its color can,
+        returns False. Else, returns True
+        '''
+        if self.player_has_to_attack(piece.color):
+            if not piece.all_legal_attacking_moves(self):
+                return False
+        return True

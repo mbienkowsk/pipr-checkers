@@ -1,3 +1,6 @@
+from random import randint
+from piece_move_board import Piece
+from typing import List
 
 
 class Player:
@@ -25,3 +28,14 @@ class Player:
     @property
     def pieces(self):
         return self._pieces
+
+
+class Bot(Player):
+    def __init__(self, color, ai=True) -> None:
+        super().__init__(color, ai)
+
+    def choose_random_piece_location(pieces: List[Piece]):  # maybe create a class variable to keep with the player and set it during the game?
+        piece = pieces[randint(0, len(pieces) - 1)]
+        return piece.x, piece.y
+
+    # choose_random_possible_move()
