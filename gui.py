@@ -1,5 +1,6 @@
 import pygame
 from constants import (WIN_WIDTH, WIN_HEIGHT, BEIGE, TITLE_RECT_MID_X, TITLE_RECT_MID_Y, BUTTON_OUTLINE_HEIGHT, BUTTON_OUTLINE_WIDTH, LIGHT_BROWN, MAX_FPS)
+from time import sleep
 
 
 def load_fonts():
@@ -57,6 +58,7 @@ def draw_menu(window):
 
 
 def draw_game_over_screen(window):
+    sleep(0.1)
     fonts = load_fonts()
     game_over_font = fonts['title_font']
     message_font = fonts['message_font']

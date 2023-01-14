@@ -1,15 +1,15 @@
 import pygame
 from sys import exit
-from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN)
+from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME)
 from piece_move_board import Board, Piece
-from player import Player
+from player import Player, Bot
 from gui import draw_menu, draw_game_over_screen
-from random import randint
+from time import sleep
 
 
 class Game:
 
-    def __init__(self, screen, players) -> None:
+    def __init__(self, screen, players, num_of_bots) -> None:
         self.board = Board()
         self.screen = screen
         self.load_images()
@@ -18,6 +18,12 @@ class Game:
         self.selected_piece = None
         self.moves_without_attacks = 0
         self.is_over = False
+        if num_of_bots == 1:
+            self.sleep_duration = SLEEP_TIME_IN_PVB_GAME
+        elif num_of_bots == 2:
+            self.sleep_duration = SLEEP_TIME_IN_BVB_GAME
+        else:
+            self.sleep_duration = None
 
     def load_images(self):
         #   tone down the alpha value of the white pieces so they don't stand out after the game over animation
@@ -157,6 +163,29 @@ class Game:
         clicked_piece = clicked_field.piece
         return clicked_field, clicked_piece
 
+    def handle_mouse_click(self, click_position):
+        clicked_field, clicked_piece = self.interpret_clicked_pixel_location(click_position)
+
+        if clicked_piece is not None:
+            self.handle_piece_click(clicked_piece)
+
+        else:
+            self.handle_field_click(clicked_field)
+
+    def make_bot_move(self):
+        sleep(self.sleep_duration)
+        bot = self.player_by_color(self.turn)
+        if bot.color == 'white':
+            movable_pieces = [piece for piece in self.board.all_white_pieces() if self.board.moves_by_colors['white'][piece]]
+            piece_click_location = bot.click_random_piece(movable_pieces)
+        else:
+            movable_pieces = [piece for piece in self.board.all_black_pieces() if self.board.moves_by_colors['black'][piece]]
+            piece_click_location = bot.click_random_piece(movable_pieces)
+        self.handle_mouse_click(piece_click_location)
+        moves_for_chosen_piece = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)[1]
+        move_click_location = bot.choose_random_possible_move_location(moves_for_chosen_piece)
+        self.handle_mouse_click(move_click_location)
+
 
 def main():
     pygame.init()
@@ -181,12 +210,17 @@ def main():
                         if pvp_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player('white'), Player('black')])
+                            game = Game(screen, [Player('white'), Player('black')], 0)
                             game.draw_board()
                         if pvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player('white'), Player('black', True)])
+                            game = Game(screen, [Player('white'), Bot('black')], 1)
+                            game.draw_board()
+                        if bvb_button.collidepoint(mouse_position):
+                            game_running = True
+                            menu_active = False
+                            game = Game(screen, [Bot('white'), Bot('black')], 2)
                             game.draw_board()
 
             elif game_over_screen_active:
@@ -202,12 +236,7 @@ def main():
                         draw_menu(screen)
         else:
             if game.player_by_color(game.turn).ai:
-                piece = game.board.get_field_by_location((1, 2)).piece
-                game.handle_piece_click(piece)
-                locations = game.board.feasible_locations_and_moves_for_piece(piece)[0]
-                field = game.board.get_field_by_location(locations[randint(0, len(locations) - 1)])
-                game.handle_field_click(field)
-
+                game.make_bot_move()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -215,13 +244,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_position = pygame.mouse.get_pos()
-                    clicked_field, clicked_piece = game.interpret_clicked_pixel_location(mouse_position)
-
-                    if clicked_piece is not None:
-                        game.handle_piece_click(clicked_piece)
-
-                    else:
-                        game.handle_field_click(clicked_field)
+                    game.handle_mouse_click(mouse_position)
 
             if game.moves_without_attacks >= 50 or game.is_over:
                 game_running = False
