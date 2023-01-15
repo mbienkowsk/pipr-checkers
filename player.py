@@ -11,12 +11,14 @@ class Player:
 
     param color - the color of the player's pieces
     type color - str
+
+    param ai - whether the player is controlled by the comupter
+    type ai - bool
     '''
 
     def __init__(self, color, ai=False) -> None:
         self.color = color
         self._ai = ai
-        self._pieces = []
 
     @property
     def ai(self):
@@ -26,10 +28,6 @@ class Player:
         when it's false, the user controls the moves
         '''
         return self._ai
-
-    @property
-    def pieces(self):
-        return self._pieces
 
 
 class Bot(Player):
@@ -118,10 +116,9 @@ class MinimaxBot(Bot):
         return False
 
     def make_move(self, board):
-        evaluation, move = self.minimax(board, MINIMAX_DEPTH, float('-inf'), float('inf'))
+        move = self.minimax(board, MINIMAX_DEPTH, float('-inf'), float('inf'))[1]
         piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
         field_click_location = self.map_field_cords_to_pixels(move.new_cords)
-        print(evaluation)
         if move.attacking:
             sleep(SLEEP_TIME_IN_BVB_GAME)
         return piece_click_location, field_click_location
