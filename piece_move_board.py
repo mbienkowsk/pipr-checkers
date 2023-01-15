@@ -436,32 +436,37 @@ class Board:
         piece = self.get_field_by_location((jumped_x, jumped_y)).piece
         return piece
 
-    def move_piece_in_board_internal(self, move):
+    def handle_passive_move_internal(self, move):
         moving_piece = move.piece
-        if move.attacking:
-            jumped_piece = self.calculate_jumped_piece_internal(move)
-            self.delete_piece(jumped_piece)
-            self.move_piece(moving_piece, move)
-            if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
-                moving_piece.promote()
-            self.update_pieces_by_colors()
-            self.update_possible_moves_by_colors()
-            if not moving_piece.all_legal_attacking_moves(self):
-                self.change_turn()
-                if not self.player_has_moving_options(self.turn):
-                    self.is_game_over = True
+        self.move_piece(moving_piece, move)
+        if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
+            moving_piece.promote()
+        self.change_turn()
+        self.update_possible_moves_by_colors()
+        if not self.player_has_moving_options(self.turn):
+            self.is_game_over = True
 
-        else:
-            self.move_piece(moving_piece, move)
-            if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
-                moving_piece.promote()
+    def handle_attacking_move_internal(self, move):
+        moving_piece = move.piece
+        jumped_piece = self.calculate_jumped_piece_internal(move)
+        self.delete_piece(jumped_piece)
+        self.move_piece(moving_piece, move)
+        if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
+            moving_piece.promote()
+        self.update_pieces_by_colors()
+        self.update_possible_moves_by_colors()
+        if not moving_piece.all_legal_attacking_moves(self):
             self.change_turn()
-            self.update_possible_moves_by_colors()
             if not self.player_has_moving_options(self.turn):
                 self.is_game_over = True
 
+    def move_piece_in_board_internal(self, move):
+        if move.attacking:
+            self.handle_attacking_move_internal(move)
+        else:
+            self.handle_passive_move_internal(move)
+
     def all_possible_children_boards(self, turn):
-        # just one loop taking the string through the indexes instead of separating w and b?
         possible_boards = []
         for piece in self.moves_by_colors[turn].keys():
             for move in self.moves_by_colors[turn][piece]:
@@ -506,11 +511,6 @@ class Board:
             if len(value) > 0:
                 return True
         return False
-
-    # def is_game_over(self, turn):
-    #     if not self.player_has_moving_options(turn):
-    #         return True
-    #     return False
 
     def change_turn(self):
         self.turn = 'white' if self.turn == 'black' else 'black'

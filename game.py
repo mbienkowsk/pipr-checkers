@@ -1,9 +1,6 @@
 import pygame
-from sys import exit
-from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME)
+from constants import FIELD_SIZE, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME
 from piece_move_board import Board, Piece
-from player import Player, Bot, MinimaxBot
-from gui import draw_menu, draw_game_over_screen
 from time import sleep
 
 
@@ -14,7 +11,6 @@ class Game:
         self.screen = screen
         self.load_images()
         self.players = players
-        self.turn = 'white'
         self.selected_piece = None
         self.moves_without_attacks = 0
         self.is_over = False
@@ -76,20 +72,10 @@ class Game:
         }
         return player_color_dictionary[color]
 
-    def change_turn(self):
-        self.turn = 'white' if self.turn == 'black' else 'black'
-
-    def player_has_moving_options(self, color):
-        player_dict = self.board.moves_by_colors[color]
-        for value in player_dict.values():
-            if len(value) > 0:
-                return True
-        return False
-
     def handle_piece_click(self, clicked_piece):
         self.board.update_pieces_by_colors()
         self.board.update_possible_moves_by_colors()
-        if clicked_piece.color == self.turn and self.board.can_piece_move(clicked_piece):
+        if clicked_piece.color == self.board.turn and self.board.can_piece_move(clicked_piece):
             self.show_possible_moves(clicked_piece)
             self.selected_piece = clicked_piece
         else:
@@ -103,49 +89,6 @@ class Game:
                 return move
         raise IndexError('Tried to reach a nonexisting move')
 
-    def handle_passive_move(self, move):
-        self.board.move_piece(self.selected_piece, move)
-        if self.selected_piece.eligible_for_promotion_after_move(move):
-            self.selected_piece.promote()
-        self.draw_board()
-        self.change_turn()
-        # FIXME
-        self.board.change_turn()
-        self.board.update_possible_moves_by_colors()
-        if not self.player_has_moving_options(self.turn):
-            self.is_over = True
-        self.selected_piece = None
-
-    def calculate_jumped_piece(self, move):
-        old_x, old_y = move.old_cords
-        next_x, next_y = move.new_cords
-        jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
-        piece = self.board.get_field_by_location((jumped_x, jumped_y)).piece
-        return piece
-
-    def handle_attacking_move(self, move):
-        attacking_piece = move.piece
-        self.selected_piece = attacking_piece
-        jumped_piece = self.calculate_jumped_piece(move)
-        self.board.delete_piece(jumped_piece)
-        self.board.move_piece(attacking_piece, move)
-        if attacking_piece.eligible_for_promotion_after_move(move):
-            attacking_piece.promote()
-
-        self.board.update_pieces_by_colors()
-        self.board.update_possible_moves_by_colors()
-
-        self.draw_board()
-        if not attacking_piece.all_legal_attacking_moves(self.board):
-            self.change_turn()
-            # FIXME
-            self.board.change_turn()
-            if not self.player_has_moving_options(self.turn):
-                self.is_over = True
-
-        self.selected_piece = None
-        return
-
     def handle_field_click(self, clicked_field):
         if self.selected_piece is not None:
             possible_move_locations, possible_moves = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)
@@ -153,11 +96,13 @@ class Game:
             if clicked_field.location in possible_move_locations:
                 move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves)
                 if move_to_make.attacking:
-                    self.handle_attacking_move(move_to_make)
+                    self.board.handle_attacking_move_internal(move_to_make)
+                    self.draw_board()
                     self.moves_without_attacks = 0
 
                 else:
-                    self.handle_passive_move(move_to_make)
+                    self.board.handle_passive_move_internal(move_to_make)
+                    self.draw_board()
                     self.moves_without_attacks += 1
 
     def interpret_clicked_pixel_location(self, location):
@@ -176,9 +121,9 @@ class Game:
         else:
             self.handle_field_click(clicked_field)
 
-    def make_random_bot_move(self):
+    def handle_random_bot_move(self):
         sleep(self.sleep_duration)
-        bot = self.player_by_color(self.turn)
+        bot = self.player_by_color(self.board.turn)
         if bot.color == 'white':
             movable_pieces = [piece for piece in self.board.all_white_pieces() if self.board.moves_by_colors['white'][piece]]
             piece_click_location = bot.click_random_piece(movable_pieces)
@@ -189,79 +134,3 @@ class Game:
         moves_for_chosen_piece = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)[1]
         move_click_location = bot.choose_random_possible_move_location(moves_for_chosen_piece)
         self.handle_mouse_click(move_click_location)
-
-
-def main():
-    pygame.init()
-    game_running = False
-    menu_active = True
-    game_over_screen_active = False
-
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-
-    while True:
-        if not game_running:
-            if menu_active:
-                pvp_button, pvb_button, bvb_button = draw_menu(screen)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        exit()
-
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        mouse_position = pygame.mouse.get_pos()
-                        if pvp_button.collidepoint(mouse_position):
-                            game_running = True
-                            menu_active = False
-                            game = Game(screen, [Player('white'), Player('black')], 0)
-                            game.draw_board()
-                        if pvb_button.collidepoint(mouse_position):
-                            game_running = True
-                            menu_active = False
-                            game = Game(screen, [Player('white'), MinimaxBot('black')], 1)
-                            game.draw_board()
-                        if bvb_button.collidepoint(mouse_position):
-                            game_running = True
-                            menu_active = False
-                            game = Game(screen, [MinimaxBot('white'), Bot('black')], 2)
-                            game.draw_board()
-
-            elif game_over_screen_active:
-                draw_game_over_screen(screen)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        exit()
-
-                    if event.type in (pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN):
-                        game_over_screen_active = False
-                        menu_active = True
-                        draw_menu(screen)
-        else:
-            if game.player_by_color(game.turn).ai:
-                if isinstance(game.player_by_color(game.turn), MinimaxBot):
-                    piece_click, field_click = game.player_by_color(game.turn).make_move(game.board)
-                    game.handle_mouse_click(piece_click)
-                    game.handle_mouse_click(field_click)
-                else:
-                    game.make_random_bot_move()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_position = pygame.mouse.get_pos()
-                    game.handle_mouse_click(mouse_position)
-
-            if game.moves_without_attacks >= 50 or game.is_over:
-                game_running = False
-                game_over_screen_active = True
-
-        pygame.display.update()
-        clock.tick(MAX_FPS)
-
-
-if __name__ == '__main__':
-    main()
