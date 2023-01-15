@@ -82,9 +82,9 @@ class MinimaxBot(Bot):
                     elif evaluation[0] > max_eval[0]:
                         max_eval = evaluation
                         best_move = move
-                    # alpha = max(alpha, evaluation[0])
-                    # if beta <= alpha:
-                    #     break
+                    alpha = max(alpha, evaluation[0])
+                    if beta <= alpha:
+                        break
 
                 return max_eval[0], best_move
 
@@ -106,9 +106,9 @@ class MinimaxBot(Bot):
                 elif evaluation[0] < min_eval[0]:
                     min_eval = evaluation
                     best_move = move
-                # beta = min(beta, evaluation[0])
-                # if beta <= alpha:
-                #     break
+                beta = min(beta, evaluation[0])
+                if beta <= alpha:
+                    break
             return min_eval[0], best_move
 
     @staticmethod
