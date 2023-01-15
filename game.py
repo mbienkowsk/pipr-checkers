@@ -2,7 +2,7 @@ import pygame
 from sys import exit
 from constants import (WIN_WIDTH, WIN_HEIGHT, FIELD_SIZE, MAX_FPS, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME)
 from piece_move_board import Board, Piece
-from player import Player, Bot
+from player import Player, Bot, MinimaxBot
 from gui import draw_menu, draw_game_over_screen
 from time import sleep
 
@@ -172,7 +172,7 @@ class Game:
         else:
             self.handle_field_click(clicked_field)
 
-    def make_bot_move(self):
+    def make_random_bot_move(self):
         sleep(self.sleep_duration)
         bot = self.player_by_color(self.turn)
         if bot.color == 'white':
@@ -215,12 +215,12 @@ def main():
                         if pvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player('white'), Bot('black')], 1)
+                            game = Game(screen, [Player('white'), MinimaxBot('black')], 1)
                             game.draw_board()
                         if bvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Bot('white'), Bot('black')], 2)
+                            game = Game(screen, [MinimaxBot('white'), Bot('black')], 2)
                             game.draw_board()
 
             elif game_over_screen_active:
@@ -236,7 +236,12 @@ def main():
                         draw_menu(screen)
         else:
             if game.player_by_color(game.turn).ai:
-                game.make_bot_move()
+                if isinstance(game.player_by_color(game.turn), MinimaxBot):
+                    piece_click, field_click = game.player_by_color(game.turn).make_move(game.board)
+                    game.handle_mouse_click(piece_click)
+                    game.handle_mouse_click(field_click)
+                else:
+                    game.make_random_bot_move()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()

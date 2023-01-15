@@ -1,7 +1,7 @@
 from random import randint
-from piece_move_board import Piece
+from piece_move_board import Piece, Board
 from typing import List
-from constants import FIELD_SIZE
+from constants import FIELD_SIZE, MINIMAX_DEPTH
 
 
 class Player:
@@ -50,3 +50,47 @@ class Bot(Player):
     def map_field_cords_to_pixels(cords):
         x, y = cords
         return (x * FIELD_SIZE + 1 / 2 * FIELD_SIZE, y * FIELD_SIZE + 1 / 2 * FIELD_SIZE)
+
+
+class MinimaxBot(Bot):
+    def __init__(self, color, ai=True) -> None:
+        super().__init__(color, ai)
+
+    def minimax(self, board: 'Board', depth, original_move=None):
+        maximizing_player = self.minimizing_or_maximizing(board.turn)
+
+        if depth == 0 or board.is_game_over(board.turn):
+            return (board.evaluate_position(), original_move)
+
+        if maximizing_player:
+            max_eval = (float('-inf'), None)
+            for position, move in board.all_possible_children_boards(self.color):
+                evaluation = self.minimax(position, depth - 1, move)
+                if evaluation[0] > max_eval[0]:
+                    max_eval = evaluation
+                    best_move = move
+
+            return max_eval[0], move
+
+        else:
+            min_eval = (float('inf'), None)
+            for position, move in board.all_possible_children_boards(self.color):
+                evaluation = self.minimax(position, depth - 1, move)
+                if evaluation[0] < min_eval[0]:
+                    min_eval = evaluation
+                    best_move = move
+
+            return min_eval[0], best_move
+
+    @staticmethod
+    def minimizing_or_maximizing(color):
+        if color == 'white':
+            return True
+        return False
+
+    def make_move(self, board):
+        evaluation, move = self.minimax(board, MINIMAX_DEPTH)
+        piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
+        field_click_location = self.map_field_cords_to_pixels(move.new_cords)
+        print(evaluation)
+        return piece_click_location, field_click_location
