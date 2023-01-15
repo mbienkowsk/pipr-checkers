@@ -1,7 +1,8 @@
 from random import randint
 from piece_move_board import Piece, Board
 from typing import List
-from constants import FIELD_SIZE, MINIMAX_DEPTH
+from constants import FIELD_SIZE, MINIMAX_DEPTH, SLEEP_TIME_IN_BVB_GAME
+from time import sleep
 
 
 class Player:
@@ -56,30 +57,58 @@ class MinimaxBot(Bot):
     def __init__(self, color, ai=True) -> None:
         super().__init__(color, ai)
 
-    def minimax(self, board: 'Board', depth, original_move=None):
+    def minimax(self, board: 'Board', depth, alpha, beta, original_move=None):
         maximizing_player = self.minimizing_or_maximizing(board.turn)
 
-        if depth == 0 or board.is_game_over(board.turn):
+        if depth == 0 or board.is_game_over:
             return (board.evaluate_position(), original_move)
 
+        best_move = None
         if maximizing_player:
             max_eval = (float('-inf'), None)
-            for position, move in board.all_possible_children_boards(self.color):
-                evaluation = self.minimax(position, depth - 1, move)
-                if evaluation[0] > max_eval[0]:
-                    max_eval = evaluation
-                    best_move = move
+            possible_children = board.all_possible_children_boards(board.turn)
+            if len(possible_children) == 1:
+                only_child = possible_children[0]
+                only_board = only_child[0]
+                only_move = only_child[1]
+                return only_board.evaluate_position(), only_move
 
-            return max_eval[0], move
+            else:
+                for position, move in possible_children:
+                    evaluation = self.minimax(position, depth - 1, alpha, beta, move)
+                    if evaluation[0] == max_eval[0] and best_move is None:
+                        max_eval = evaluation
+                        best_move = move
+                    elif evaluation[0] > max_eval[0]:
+                        max_eval = evaluation
+                        best_move = move
+                    # alpha = max(alpha, evaluation[0])
+                    # if beta <= alpha:
+                    #     break
+
+                return max_eval[0], best_move
 
         else:
             min_eval = (float('inf'), None)
-            for position, move in board.all_possible_children_boards(self.color):
-                evaluation = self.minimax(position, depth - 1, move)
-                if evaluation[0] < min_eval[0]:
+            possible_children = board.all_possible_children_boards(board.turn)
+
+            if len(possible_children) == 1:
+                only_child = possible_children[0]
+                only_board = only_child[0]
+                only_move = only_child[1]
+                return only_board.evaluate_position(), only_move
+
+            for position, move in possible_children:
+                evaluation = self.minimax(position, depth - 1, alpha, beta, move)
+                if evaluation[0] == min_eval[0] and best_move is None:
                     min_eval = evaluation
                     best_move = move
-
+                elif evaluation[0] < min_eval[0]:
+                    min_eval = evaluation
+                    best_move = move
+                # beta = min(beta, evaluation[0])
+                # if beta <= alpha:
+                #     break
             return min_eval[0], best_move
 
     @staticmethod
@@ -89,8 +118,10 @@ class MinimaxBot(Bot):
         return False
 
     def make_move(self, board):
-        evaluation, move = self.minimax(board, MINIMAX_DEPTH)
+        evaluation, move = self.minimax(board, MINIMAX_DEPTH, float('-inf'), float('inf'))
         piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
         field_click_location = self.map_field_cords_to_pixels(move.new_cords)
         print(evaluation)
+        if move.attacking:
+            sleep(SLEEP_TIME_IN_BVB_GAME)
         return piece_click_location, field_click_location

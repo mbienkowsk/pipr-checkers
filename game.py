@@ -109,6 +109,8 @@ class Game:
             self.selected_piece.promote()
         self.draw_board()
         self.change_turn()
+        # FIXME
+        self.board.change_turn()
         self.board.update_possible_moves_by_colors()
         if not self.player_has_moving_options(self.turn):
             self.is_over = True
@@ -136,6 +138,8 @@ class Game:
         self.draw_board()
         if not attacking_piece.all_legal_attacking_moves(self.board):
             self.change_turn()
+            # FIXME
+            self.board.change_turn()
             if not self.player_has_moving_options(self.turn):
                 self.is_over = True
 

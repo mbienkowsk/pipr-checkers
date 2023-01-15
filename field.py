@@ -33,7 +33,7 @@ class Field:
         return (self.x, self.y)
 
     def __str__(self) -> str:
-        return f'[{self.color}, {self.location}]'
+        return f'[{self.location}]'
 
     @property
     def piece(self):

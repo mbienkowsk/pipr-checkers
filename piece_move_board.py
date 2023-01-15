@@ -284,6 +284,7 @@ class Board:
         self.update_possible_moves_by_colors()
         # we'll think of a better way to evaluate a turn in a board for the algorithm, but for now
         self.turn = 'white'
+        self.is_game_over = False
 
     def get_field_by_location(self, location) -> 'Field':
         for row in self.fields:
@@ -331,7 +332,10 @@ class Board:
         result = ''
         for row in self.fields:
             for field in row:
-                result += str(field)
+                if field.is_taken():
+                    result += str(field.piece)
+                else:
+                    result += str(field)
             result += '\n'
         return result
 
@@ -438,7 +442,7 @@ class Board:
             jumped_piece = self.calculate_jumped_piece_internal(move)
             self.delete_piece(jumped_piece)
             self.move_piece(moving_piece, move)
-            if moving_piece.eligible_for_promotion_after_move(move):
+            if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
                 moving_piece.promote()
             self.update_pieces_by_colors()
             self.update_possible_moves_by_colors()
@@ -449,7 +453,7 @@ class Board:
 
         else:
             self.move_piece(moving_piece, move)
-            if moving_piece.eligible_for_promotion_after_move(move):
+            if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
                 moving_piece.promote()
             self.change_turn()
             self.update_possible_moves_by_colors()
@@ -469,26 +473,32 @@ class Board:
         return possible_boards
 
     def evaluate_position(self):
-        evaluation = 0
-        # heuristics from http://www.cs.columbia.edu/~devans/TIC/AB.html
-        sum_of_white_pieces = sum(piece.value for piece in self.all_white_pieces())
-        sum_of_black_pieces = sum(piece.value for piece in self.all_black_pieces())
-        evaluation += (sum_of_white_pieces - sum_of_black_pieces)
+        if self.is_game_over:
+            if self.winner() == 'white':
+                return float('inf')
+            elif self.winner() == 'black':
+                return float('-inf')
+        else:
+            evaluation = 0
+            # heuristics from http://www.cs.columbia.edu/~devans/TIC/AB.html
+            sum_of_white_pieces = sum(piece.value for piece in self.all_white_pieces())
+            sum_of_black_pieces = sum(piece.value for piece in self.all_black_pieces())
+            evaluation += (sum_of_white_pieces - sum_of_black_pieces)
 
-        white_progression_list = [7 - piece.y for piece in self.all_white_pieces() if not piece.king]
-        average_progression_white = sum(white_progression_list) / len(white_progression_list) if white_progression_list else 0
+            # white_progression_list = [7 - piece.y for piece in self.all_white_pieces() if not piece.king]
+            # average_progression_white = sum(white_progression_list) / len(white_progression_list) if white_progression_list else 0
 
-        black_progression_list = [piece.y for piece in self.all_black_pieces() if not piece.king]
-        average_progression_black = sum(black_progression_list) / len(black_progression_list) if black_progression_list else 0
+            # black_progression_list = [piece.y for piece in self.all_black_pieces() if not piece.king]
+            # average_progression_black = sum(black_progression_list) / len(black_progression_list) if black_progression_list else 0
 
-        evaluation += (average_progression_white - average_progression_black)
+            # evaluation += (average_progression_white - average_progression_black)
 
-        # second_two_digits = average_progression_white - average_progression_black
-        # if second_two_digits > 0:
-        #     second_two_digits += 50 # any other way to
+            # second_two_digits = average_progression_white - average_progression_black
+            # if second_two_digits > 0:
+            #     second_two_digits += 50 # any other way to
 
-        #   to adjust later for a more exact evaluation
-        return evaluation
+            #   to adjust later for a more exact evaluation
+            return evaluation
 
     def player_has_moving_options(self, color):
         player_dict = self.moves_by_colors[color]
@@ -497,10 +507,18 @@ class Board:
                 return True
         return False
 
-    def is_game_over(self, turn):
-        if not self.player_has_moving_options(turn):
-            return True
-        return False
+    # def is_game_over(self, turn):
+    #     if not self.player_has_moving_options(turn):
+    #         return True
+    #     return False
 
     def change_turn(self):
         self.turn = 'white' if self.turn == 'black' else 'black'
+
+    def winner(self):
+        if not self.player_has_moving_options('black'):
+            return 'white'
+        elif not self.player_has_moving_options('white'):
+            return 'black'
+        else:
+            return None
