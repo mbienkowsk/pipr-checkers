@@ -7,8 +7,7 @@ from copy import deepcopy
 
 
 class Piece:
-    '''
-    Class representing a checkers piece
+    '''Class representing a checkers piece
 
     param value: how much is the piece worth during the evaluation of a position
     type value: int
@@ -366,7 +365,7 @@ class Board:
         self._setup_fields()
         self._setup_pieces()
         self.pieces_by_colors = dict()
-        self.update_pieces_by_colors()
+        self.setup_pieces_by_colors()
         self.moves_by_colors = dict()
         self.update_possible_moves_by_colors()
         # we'll think of a better way to evaluate a turn in a board for the algorithm, but for now FIXME
@@ -438,18 +437,26 @@ class Board:
         return result
 
     def delete_piece(self, piece):
+        '''
+        Remove a given piece from the board when it's jumped over.
+        '''
         piece_field = self.get_field_by_location(piece.location)
         piece_field.piece = None
+        self.pieces_by_colors[piece.color].remove(piece)
+        del self.moves_by_colors[piece.color][piece]
 
     @property
     def one_dimensional_field_list(self):
+        '''Returns the fields of the board in a list with length of 64
+        so in most cases one for loop is used instead of 2 when iterating over them.'''
         field_list = list()
         for row in self.fields:
             for field in row:
                 field_list.append(field)
         return field_list
 
-    def update_pieces_by_colors(self):
+    def setup_pieces_by_colors(self):
+        '''Sets up the self.pieces_by_colors dictionary at the start of a game'''
         pieces_by_colors = {
             'white': [],
             'black': []
@@ -461,12 +468,15 @@ class Board:
         self.pieces_by_colors = pieces_by_colors
 
     def all_white_pieces(self):
+        '''Returns a list of all white pieces in a game.'''
         return self.pieces_by_colors['white']
 
     def all_black_pieces(self):
+        '''Returns a list of all black pieces in a game.'''
         return self.pieces_by_colors['black']
 
-    def player_has_to_attack(self, color):
+    def player_has_to_attack(self, color):  # MIGHT BE ABLE TO GET RID OF IT AND DO IT INSIDE OF UPDATE_MOVES FIXME
+        '''Checks whether a player has to attack during the current round, returns a boolean'''
         player_dict = self.moves_by_colors[color]
         for value in player_dict.values():
             for move in value:
@@ -475,7 +485,8 @@ class Board:
         return False
 
     def update_possible_moves_by_colors(self):
-
+        '''Updates the possible_moves_by_colors parameter to reflect the current state of the board.
+        '''
         moves_by_colors = {
             'white': {},
             'black': {}
@@ -499,22 +510,20 @@ class Board:
         self.moves_by_colors = moves_by_colors
 
     def feasible_locations_and_moves_for_piece(self, piece):
-        self.update_possible_moves_by_colors()
+        '''Returns the locations and moves a piece can move to in the current round'''
+        self.update_possible_moves_by_colors()  # FIXME if we get set the has_to_attack inside of update, we don't have to run this one
         moves = self.moves_by_colors[piece.color][piece]
         locations = [move.new_cords for move in moves]
         return locations, moves
 
-    def move_piece(self, piece, move):
-        if move.attacking:  # do we need the separation?
-            piece.x, piece.y = move.new_cords
-            self.get_field_by_location(move.old_cords).piece = None
-            self.get_field_by_location(move.new_cords).piece = piece
-        else:
-            piece.x, piece.y = move.new_cords
-            self.get_field_by_location(move.old_cords).piece = None
-            self.get_field_by_location(move.new_cords).piece = piece
+    def update_piece_location(self, piece, move):
+        '''Moves the given piece by a given move inside of its and the fields'
+        parameters'''
+        piece.x, piece.y = move.new_cords
+        self.get_field_by_location(move.old_cords).piece = None
+        self.get_field_by_location(move.new_cords).piece = piece
 
-    def can_piece_move(self, piece):
+    def can_piece_move(self, piece):  # MIGHT BE ABLE TO SIMPLIFY AFTER THE CHANGES ABOVE
         '''Determines whether a piece can be moved during a player's turn
         If the piece can't attack and another one of its color can,
         returns False. Else, returns True
@@ -524,16 +533,19 @@ class Board:
                 return False
         return True
 
-    def calculate_jumped_piece_internal(self, move):
+    def get_jumped_piece(self, move):
+        '''Returns a piece that gets jumped over during the given move so it can be removed'''
         old_x, old_y = move.old_cords
         next_x, next_y = move.new_cords
         jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
         piece = self.get_field_by_location((jumped_x, jumped_y)).piece
         return piece
 
-    def handle_passive_move_internal(self, move):
+    def handle_passive_move(self, move):
+        '''Handles a passive move and its consequences including promotion,
+        changing the turn etc.'''
         moving_piece = move.piece
-        self.move_piece(moving_piece, move)
+        self.update_piece_location(moving_piece, move)
         if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
             moving_piece.promote()
         self.change_turn()
@@ -541,38 +553,48 @@ class Board:
         if not self.player_has_moving_options(self.turn):
             self.is_game_over = True
 
-    def handle_attacking_move_internal(self, move):
+    def handle_attacking_move(self, move):
+        '''Handles an attacking move move and its consequences including promotion,
+        changing the turn etc.'''
         moving_piece = move.piece
-        jumped_piece = self.calculate_jumped_piece_internal(move)
+        jumped_piece = self.get_jumped_piece(move)
         self.delete_piece(jumped_piece)
-        self.move_piece(moving_piece, move)
+        self.update_piece_location(moving_piece, move)
         if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
             moving_piece.promote()
-        self.update_pieces_by_colors()
         self.update_possible_moves_by_colors()
         if not moving_piece.all_legal_attacking_moves(self):
             self.change_turn()
             if not self.player_has_moving_options(self.turn):
                 self.is_game_over = True
 
-    def move_piece_in_board_internal(self, move):
+    def handle_move(self, move):
+        '''Compiles handle_attacking and passive move methods into one to simplify
+        the code'''
         if move.attacking:
-            self.handle_attacking_move_internal(move)
+            self.handle_attacking_move(move)
         else:
-            self.handle_passive_move_internal(move)
+            self.handle_passive_move(move)
 
-    def all_possible_children_boards(self, turn):
+    def all_possible_children_boards(self, color_to_move):
+        '''Returns all possible boards that could derive from the possible moves
+        of a player with a given color
+        '''
         possible_boards = []
-        for piece in self.moves_by_colors[turn].keys():
-            for move in self.moves_by_colors[turn][piece]:
+        for piece in self.moves_by_colors[color_to_move].keys():
+            for move in self.moves_by_colors[color_to_move][piece]:
                 temp_board = deepcopy(self)
                 temp_piece = temp_board.get_field_by_location((piece.x, piece.y)).piece
                 temp_move = Move(move.attacking, move.old_cords, move.new_cords, temp_piece)
-                temp_board.move_piece_in_board_internal(temp_move)
+                temp_board.handle_move(temp_move)
                 possible_boards.append((temp_board, move))
         return possible_boards
 
     def evaluate_position(self):
+        '''Evaluates the current situation on the board
+        Positive evaluation means white has the edge, negative means
+        black does. 0 Means the position is even. The methodology I used is described
+        in the project's documentation'''
         if self.is_game_over:
             if self.winner() == 'white':
                 return float('inf')
@@ -580,7 +602,7 @@ class Board:
                 return float('-inf')
         else:
             evaluation = 0
-            # heuristics from http://www.cs.columbia.edu/~devans/TIC/AB.html
+            # heuristics from http://www.cs.columbia.edu/~devans/TIC/AB.html FIXME
             sum_of_white_pieces = sum(piece.value for piece in self.all_white_pieces())
             sum_of_black_pieces = sum(piece.value for piece in self.all_black_pieces())
             evaluation += (sum_of_white_pieces - sum_of_black_pieces)
@@ -601,6 +623,9 @@ class Board:
             return evaluation
 
     def player_has_moving_options(self, color):
+        '''Checks whether a player with a given color has any possible moving options
+        If he doesn't he lost the game.
+        returns a boolean value'''
         player_dict = self.moves_by_colors[color]
         for value in player_dict.values():
             if len(value) > 0:
@@ -608,6 +633,7 @@ class Board:
         return False
 
     def change_turn(self):
+        '''Changes'''
         self.turn = 'white' if self.turn == 'black' else 'black'
 
     def winner(self):

@@ -1,0 +1,10 @@
+# STUFF TO DO
+
+## Check whether player_has_to_attack can be simplified during update_possible_moves_by_colors - it would save a ton of time
+
+## Come up with improvements to the evaluate_position function
+
+## Implement the option to select a MINIMAX_DEPTH
+
+- terminal?
+- maybe stick with the time limit?

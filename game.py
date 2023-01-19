@@ -73,8 +73,7 @@ class Game:
         return player_color_dictionary[color]
 
     def handle_piece_click(self, clicked_piece):
-        self.board.update_pieces_by_colors()
-        self.board.update_possible_moves_by_colors()
+        # self.board.update_possible_moves_by_colors() FIXME
         if clicked_piece.color == self.board.turn and self.board.can_piece_move(clicked_piece):
             self.show_possible_moves(clicked_piece)
             self.selected_piece = clicked_piece
@@ -96,14 +95,16 @@ class Game:
             if clicked_field.location in possible_move_locations:
                 move_to_make = self.find_move_by_move_location(clicked_field.location, possible_moves)
                 if move_to_make.attacking:
-                    self.board.handle_attacking_move_internal(move_to_make)
+                    self.board.handle_attacking_move(move_to_make)
                     self.draw_board()
                     self.moves_without_attacks = 0
 
                 else:
-                    self.board.handle_passive_move_internal(move_to_make)
+                    self.board.handle_passive_move(move_to_make)
                     self.draw_board()
                     self.moves_without_attacks += 1
+
+                self.selected_piece = None
 
     def interpret_clicked_pixel_location(self, location):
         x, y = location
