@@ -1,5 +1,4 @@
 
-
 class Field:
     '''
     Class representing a single field on the checkerboard.

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 from field import Field
-from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS
+from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS, Color
 from errors import NonexistingFieldCallError
 from copy import deepcopy
 
@@ -35,7 +35,7 @@ class Piece:
         self._x = x
         self._y = y
 
-        if self.color == 'white':
+        if self.color == Color.WHITE:
             self.image_dict_ind = 'WP'
         else:
             self.image_dict_ind = 'BP'
@@ -72,7 +72,7 @@ class Piece:
         if self.king:
             return 0
         else:
-            return -1 if self.color == 'white' else 1
+            return -1 if self.color == Color.WHITE else 1
 
     def can_move_plus_x(self, attack=False):
         '''Returns a boolean determining whether the piece has the space to move/attack
@@ -369,7 +369,7 @@ class Board:
         self.moves_by_colors = dict()
         self.update_possible_moves_by_colors()
         # we'll think of a better way to evaluate a turn in a board for the algorithm, but for now FIXME
-        self.turn = 'white'
+        self.turn = Color.WHITE
         self.is_game_over = False
 
     def get_field_by_location(self, location) -> 'Field':
@@ -402,17 +402,17 @@ class Board:
             for j in range(8):
                 current_field = self.fields[j][i]
                 if current_field.color == BROWN:
-                    piece = Piece('black', j, i)
+                    piece = Piece(Color.BLACK, j, i)
                     current_field.piece = piece
-                    # self.player_by_color('black').pieces.append(piece) FIXME
+                    # self.player_by_color(Color.BLACK).pieces.append(piece) FIXME
 
         for i in range(5, 8):
             for j in range(8):
                 current_field = self.fields[j][i]
                 if current_field.color == BROWN:
-                    piece = Piece('white', j, i)
+                    piece = Piece(Color.WHITE, j, i)
                     current_field.piece = piece
-                    # self.player_by_color('white').pieces.append(piece) FIXME
+                    # self.player_by_color(Color.WHITE).pieces.append(piece) FIXME
 
     @property
     def fields(self):
@@ -458,8 +458,8 @@ class Board:
     def setup_pieces_by_colors(self):
         '''Sets up the self.pieces_by_colors dictionary at the start of a game'''
         pieces_by_colors = {
-            'white': [],
-            'black': []
+            Color.WHITE: [],
+            Color.BLACK: []
         }
         for field in self.one_dimensional_field_list:
             if field.is_taken():
@@ -469,11 +469,11 @@ class Board:
 
     def all_white_pieces(self):
         '''Returns a list of all white pieces in a game.'''
-        return self.pieces_by_colors['white']
+        return self.pieces_by_colors[Color.WHITE]
 
     def all_black_pieces(self):
         '''Returns a list of all black pieces in a game.'''
-        return self.pieces_by_colors['black']
+        return self.pieces_by_colors[Color.BLACK]
 
     def player_has_to_attack(self, color):  # MIGHT BE ABLE TO GET RID OF IT AND DO IT INSIDE OF UPDATE_MOVES FIXME
         '''Checks whether a player has to attack during the current round, returns a boolean'''
@@ -488,24 +488,24 @@ class Board:
         '''Updates the possible_moves_by_colors parameter to reflect the current state of the board.
         '''
         moves_by_colors = {
-            'white': {},
-            'black': {}
+            Color.WHITE: {},
+            Color.BLACK: {}
         }
 
         for piece in self.all_white_pieces():
-            moves_by_colors['white'][piece] = piece.all_possible_legal_moves(self)
+            moves_by_colors[Color.WHITE][piece] = piece.all_possible_legal_moves(self)
         for piece in self.all_black_pieces():
-            moves_by_colors['black'][piece] = piece.all_possible_legal_moves(self)
+            moves_by_colors[Color.BLACK][piece] = piece.all_possible_legal_moves(self)
 
         self.moves_by_colors = moves_by_colors
 
-        if self.player_has_to_attack('white'):
+        if self.player_has_to_attack(Color.WHITE):
             for piece in self.all_white_pieces():
-                moves_by_colors['white'][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+                moves_by_colors[Color.WHITE][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
 
-        if self.player_has_to_attack('black'):
+        if self.player_has_to_attack(Color.BLACK):
             for piece in self.all_black_pieces():
-                moves_by_colors['black'][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+                moves_by_colors[Color.BLACK][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
 
         self.moves_by_colors = moves_by_colors
 
@@ -596,9 +596,9 @@ class Board:
         black does. 0 Means the position is even. The methodology I used is described
         in the project's documentation'''
         if self.is_game_over:
-            if self.winner() == 'white':
+            if self.winner() == Color.WHITE:
                 return float('inf')
-            elif self.winner() == 'black':
+            elif self.winner() == Color.BLACK:
                 return float('-inf')
         else:
             evaluation = 0
@@ -634,13 +634,13 @@ class Board:
 
     def change_turn(self):
         '''Changes the turn parameter to the opposite color'''
-        self.turn = 'white' if self.turn == 'black' else 'black'
+        self.turn = Color.WHITE if self.turn == Color.BLACK else Color.BLACK
 
     def winner(self):
         '''Returns which player won the game or None if it's a tie'''
-        if not self.player_has_moving_options('black'):
-            return 'white'
-        elif not self.player_has_moving_options('white'):
-            return 'black'
+        if not self.player_has_moving_options(Color.BLACK):
+            return Color.WHITE
+        elif not self.player_has_moving_options(Color.WHITE):
+            return Color.BLACK
         else:
             return None

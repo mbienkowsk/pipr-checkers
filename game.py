@@ -1,5 +1,5 @@
 import pygame
-from constants import FIELD_SIZE, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME
+from constants import FIELD_SIZE, PIECE_PADDING, GREEN, BROWN, SLEEP_TIME_IN_PVB_GAME, SLEEP_TIME_IN_BVB_GAME, Color
 from piece_move_board import Board, Piece
 from time import sleep
 
@@ -169,11 +169,11 @@ class Game:
         '''
         sleep(self.sleep_duration)
         bot = self.player_color_dictionary[self.board.turn]
-        if bot.color == 'white':
-            movable_pieces = [piece for piece in self.board.all_white_pieces() if self.board.moves_by_colors['white'][piece]]
+        if bot.color == Color.WHITE:
+            movable_pieces = [piece for piece in self.board.all_white_pieces() if self.board.moves_by_colors[Color.WHITE][piece]]
             piece_click_location = bot.click_random_piece(movable_pieces)
         else:
-            movable_pieces = [piece for piece in self.board.all_black_pieces() if self.board.moves_by_colors['black'][piece]]
+            movable_pieces = [piece for piece in self.board.all_black_pieces() if self.board.moves_by_colors[Color.BLACK][piece]]
             piece_click_location = bot.click_random_piece(movable_pieces)
         self.handle_mouse_click(piece_click_location)
         moves_for_chosen_piece = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)[1]

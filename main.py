@@ -1,5 +1,5 @@
 import pygame
-from constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS
+from constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color
 from gui import draw_game_over_screen, draw_menu
 from game import Game
 from player import Player, MinimaxBot, Bot
@@ -32,17 +32,17 @@ def main():
                         if pvp_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player('white'), Player('black')], 0)
+                            game = Game(screen, [Player(Color.WHITE), Player(Color.BLACK)], 0)
                             game.draw_board()
                         if pvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player('white'), MinimaxBot('black')], 1)
+                            game = Game(screen, [Player(Color.WHITE), MinimaxBot(Color.BLACK)], 1)
                             game.draw_board()
                         if bvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [MinimaxBot('white'), Bot('black')], 2)
+                            game = Game(screen, [MinimaxBot(Color.WHITE), Bot(Color.BLACK)], 2)
                             game.draw_board()
 
             elif game_over_screen_active:

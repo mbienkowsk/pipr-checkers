@@ -1,7 +1,7 @@
 from random import randint, shuffle
 from piece_move_board import Piece, Board
 from typing import List
-from constants import FIELD_SIZE, MINIMAX_DEPTH, SLEEP_TIME_IN_BVB_GAME
+from constants import FIELD_SIZE, MINIMAX_DEPTH, SLEEP_TIME_IN_BVB_GAME, Color
 from time import sleep, perf_counter
 
 
@@ -10,7 +10,7 @@ class Player:
     Class representing a checkers player
 
     param color - the color of the player's pieces
-    type color - str
+    type color - Color
 
     param ai - whether the player is controlled by the computer
     type ai - bool
@@ -142,7 +142,7 @@ class MinimaxBot(Bot):
         white = maximizing - returns True
         black = minimizing - returns False
         '''
-        if color == 'white':
+        if color == Color.WHITE:
             return True
         return False
 

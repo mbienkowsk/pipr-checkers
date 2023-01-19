@@ -1,4 +1,5 @@
 from piece_move_board import Board
+from constants import Color
 
 
 def test_board_init():
@@ -40,3 +41,5 @@ def test_board_init():
                 actual_occupied_field_coords.add(field.location)
     assert len(expected_occupied_fields_coords) == len(actual_occupied_field_coords)
     assert expected_occupied_fields_coords == actual_occupied_field_coords
+    assert not board.is_game_over
+    assert board.turn == Color.WHITE
