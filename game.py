@@ -92,8 +92,7 @@ class Game:
         self.screen.blit(field_surf, (square_rect))
 
     def show_possible_moves(self, piece: 'Piece'):
-        '''Highlight all fields where a given piece can move at the moment
-        '''
+        '''Highlight all fields where a given piece can move at the moment'''
         self.draw_board()
         possible_moves = piece.all_possible_legal_moves(self.board)
         possible_move_squares = [self.board.get_field_by_location(move.new_cords) for move in possible_moves]
@@ -102,9 +101,11 @@ class Game:
 
     @property
     def player_color_dictionary(self):
+        '''Getter for player_color_dictionary'''
         return self._player_color_dictionary
 
     def handle_piece_click(self, clicked_piece):
+        '''The method for handling an event when a given piece is clicked.'''
         self.board.update_possible_moves_by_colors()
         if clicked_piece.color == self.board.turn and self.board.can_piece_move(clicked_piece):
             self.show_possible_moves(clicked_piece)
@@ -115,12 +116,14 @@ class Game:
 
     @staticmethod
     def find_move_by_move_location(location, piece_move_list):
+        '''Returns a move from the given list with the new_cords param matching the given location'''
         for move in piece_move_list:
             if move.new_cords == location:
                 return move
         raise IndexError('Tried to reach a nonexisting move')
 
     def handle_field_click(self, clicked_field):
+        '''The method for handling an event when a field is clicked'''
         if self.selected_piece is not None:
             possible_move_locations, possible_moves = self.board.feasible_locations_and_moves_for_piece(self.selected_piece)
 
@@ -141,6 +144,8 @@ class Game:
                 self.draw_board()
 
     def interpret_clicked_pixel_location(self, location):
+        '''Maps the clicked pixel coordinates onto the corresponding
+        field in the internal representation of the board'''
         x, y = location
         clicked_field_location = (int(x // FIELD_SIZE), int(y // FIELD_SIZE))
         clicked_field = self.board.get_field_by_location(clicked_field_location)
@@ -148,6 +153,8 @@ class Game:
         return clicked_field, clicked_piece
 
     def handle_mouse_click(self, click_position):
+        '''Takes in the position of the click, converts it and
+        calls the needed method to handle the click'''
         clicked_field, clicked_piece = self.interpret_clicked_pixel_location(click_position)
 
         if clicked_piece is not None:
@@ -157,6 +164,9 @@ class Game:
             self.handle_field_click(clicked_field)
 
     def handle_random_bot_move(self):
+        '''This method gives the random bot the arguments
+        he needs to decide on his move and executes it
+        '''
         sleep(self.sleep_duration)
         bot = self.player_color_dictionary[self.board.turn]
         if bot.color == 'white':

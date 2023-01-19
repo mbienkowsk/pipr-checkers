@@ -1,5 +1,5 @@
 import pygame
-from constants import (WIN_WIDTH, WIN_HEIGHT, BEIGE, TITLE_RECT_MID_X, TITLE_RECT_MID_Y, BUTTON_OUTLINE_HEIGHT, BUTTON_OUTLINE_WIDTH, LIGHT_BROWN, MAX_FPS)
+from constants import (WIN_WIDTH, WIN_HEIGHT, BEIGE, TITLE_RECT_MID_X, TITLE_RECT_MID_Y, BUTTON_OUTLINE_HEIGHT, BUTTON_OUTLINE_WIDTH, LIGHT_BROWN)
 from time import sleep
 
 
@@ -58,6 +58,7 @@ def draw_menu(window):
 
 
 def draw_game_over_screen(window):
+    '''Draw the screen with the Game Over! message'''
     sleep(0.1)
     fonts = load_fonts()
     game_over_font = fonts['title_font']
@@ -76,27 +77,3 @@ def draw_game_over_screen(window):
     window.blit(go_screen, (0, 0))
     window.blit(game_over_surf, game_over_rect)
     window.blit(message_surf, message_rect)
-
-
-def main():
-    pygame.init()
-
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-    screen.fill('white')
-    pygame.draw.rect(screen, 'red', pygame.Rect(200, 200, 100, 300))
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    draw_game_over_screen(screen)
-        pygame.display.update()
-        clock.tick(MAX_FPS)
-
-
-if __name__ == '__main__':
-    main()
