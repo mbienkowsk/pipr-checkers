@@ -633,10 +633,11 @@ class Board:
         return False
 
     def change_turn(self):
-        '''Changes'''
+        '''Changes the turn parameter to the opposite color'''
         self.turn = 'white' if self.turn == 'black' else 'black'
 
     def winner(self):
+        '''Returns which player won the game or None if it's a tie'''
         if not self.player_has_moving_options('black'):
             return 'white'
         elif not self.player_has_moving_options('white'):

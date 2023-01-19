@@ -8,3 +8,13 @@
 
 - terminal?
 - maybe stick with the time limit?
+
+## FOOKIN TYPE HINTS
+
+## FLAKE
+
+## MAX_MOVES_WITHOUT_ATTACKS AS A CONSTANT
+
+## player color dictionary to be entirely an attribute of game and to be accessed by a getter and an index?
+
+## MULTIPLE JUMPS POSSIBLE AT THE SAME TIME BUG

@@ -7,6 +7,9 @@ from sys import exit
 
 
 def main():
+    '''The main function controlling the flow of the entire experience,
+    starting with the menu, ggoing on through the game and
+    ending at the game over screen. To play, run the file:)'''
     pygame.init()
     game_running = False
     menu_active = True
@@ -54,9 +57,10 @@ def main():
                         menu_active = True
                         draw_menu(screen)
         else:
-            if game.player_by_color(game.board.turn).ai:
-                if isinstance(game.player_by_color(game.board.turn), MinimaxBot):
-                    piece_click, field_click = game.player_by_color(game.board.turn).make_move(game.board)
+            if game.player_color_dictionary[game.board.turn].ai:
+                bot_to_move = game.player_color_dictionary[game.board.turn]
+                if isinstance(bot_to_move, MinimaxBot):
+                    piece_click, field_click = bot_to_move.make_move(game.board)
                     game.handle_mouse_click(piece_click)
                     game.handle_mouse_click(field_click)
                 else:
