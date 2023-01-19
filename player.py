@@ -1,18 +1,18 @@
-from random import randint
+from random import randint, shuffle
 from piece_move_board import Piece, Board
 from typing import List
 from constants import FIELD_SIZE, MINIMAX_DEPTH, SLEEP_TIME_IN_BVB_GAME
-from time import sleep
+from time import sleep, perf_counter
 
 
 class Player:
     '''
-    Class for representing a checkers player
+    Class representing a checkers player
 
     param color - the color of the player's pieces
     type color - str
 
-    param ai - whether the player is controlled by the comupter
+    param ai - whether the player is controlled by the computer
     type ai - bool
     '''
 
@@ -24,13 +24,13 @@ class Player:
     def ai(self):
         '''
         Getter for the ai parameter
-        when self.ai is true, the player is a bot,
-        when it's false, the user controls the moves
         '''
         return self._ai
 
 
 class Bot(Player):
+    #   FIXME
+
     def __init__(self, color, ai=True) -> None:
         super().__init__(color, ai)
 
@@ -52,10 +52,32 @@ class Bot(Player):
 
 
 class MinimaxBot(Bot):
+    '''
+    Class representing a bot using the minimax algorithm
+    to make a move
+
+    param color: color of the bot's pieces
+    type color: str # FIXME
+    '''
+
     def __init__(self, color, ai=True) -> None:
         super().__init__(color, ai)
+        self.times = list()
 
-    def minimax(self, board: 'Board', depth, alpha, beta, original_move=None):
+    def minimax(self, board: 'Board', depth, alpha=float('-inf'), beta=float('inf'), original_move=None):
+        '''
+        The function used to determine which move is the best for the bot
+        param: type
+        board: Board
+        depth: int
+        alpha: float
+        beta: float
+        original_move: Move or None by default in the first call made
+
+        returns:
+        board evaluation: float FIXME
+        best_move/original_move: Move
+        '''
         maximizing_player = self.minimizing_or_maximizing(board.turn)
 
         if depth == 0 or board.is_game_over:
@@ -96,6 +118,9 @@ class MinimaxBot(Bot):
                 only_move = only_child[1]
                 return only_board.evaluate_position(), only_move
 
+            shuffle(possible_children)
+            #   to make the game non deterministic in positions in which there's
+            #   no clear winning/advantageous move
             for position, move in possible_children:
                 evaluation = self.minimax(position, depth - 1, alpha, beta, move)
                 if evaluation[0] == min_eval[0] and best_move is None:
@@ -111,14 +136,31 @@ class MinimaxBot(Bot):
 
     @staticmethod
     def minimizing_or_maximizing(color):
+        '''
+        Returns whether the player of a given color aims
+        to maximize or minimize the evaluation in a position
+        white = maximizing - returns True
+        black = minimizing - returns False
+        '''
         if color == 'white':
             return True
         return False
 
     def make_move(self, board):
+        '''
+        The method responsible for the entire process of making a move:
+        calculation and mapping the move into the pixel grid of the window
+        '''
+        start_time = perf_counter()
         move = self.minimax(board, MINIMAX_DEPTH, float('-inf'), float('inf'))[1]
         piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
         field_click_location = self.map_field_cords_to_pixels(move.new_cords)
+        stop_time = perf_counter()
+        self.times.append(stop_time - start_time)
+        print(self.average_move_time())
         if move.attacking:
             sleep(SLEEP_TIME_IN_BVB_GAME)
         return piece_click_location, field_click_location
+
+    def average_move_time(self):
+        return round(sum(self.times) / len(self.times), 3)
