@@ -2,7 +2,8 @@
 
 ## Instrukcja włączenia programu
 
-- z poziomu głównego katalogu projektu należy uruchomić program przez terminal
+- Do obsługi programu potrzebna jest biblioteka pygame. Pisząc go, używałem ostatniej dostępnej dla mnie wersji - pygame'a 2.1.2 na pythonie 3.8.10, nie jestem niestety pewien, jaka najniższa wersja zadziała poprawnie.
+- Z poziomu głównego katalogu projektu należy uruchomić program przez terminal
 (python3 -m checkers.main), ze względu na segmentację paczek na testy i pliki z kodem
 przycisk run w vsc nie rozwiązuje poprawnie importów.
 

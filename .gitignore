@@ -1,0 +1,10 @@
+__pycache__
+.vscode
+.pytest_cache
+checkers/__pycache__
+fonts/'coolvetica rg.otf:Zone.Identifier'
+images/black_king.png:Zone.Identifier
+images/black_piece.png:Zone.Identifier
+images/white_king.png:Zone.Identifier
+images/white_piece.png:Zone.Identifier
+tests/__pycache__
