@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Tuple
 from field import Field
 from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS, Color
-from errors import NonexistingFieldCallError
 from copy import deepcopy
 
 
@@ -381,7 +380,6 @@ class Board:
         for field in self.one_dimensional_field_list:
             if field.location == location:
                 return field
-        raise NonexistingFieldCallError(f'Tried to obtain a nonexisting field: {location}')
 
     def _setup_fields(self):
         '''Fills the fields parameter with a correct setting of fields
