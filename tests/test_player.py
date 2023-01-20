@@ -1,5 +1,5 @@
 from checkers.player import Player, RandomBot, MinimaxBot
-from checkers.constants import Color
+from checkers.constants import Color, Placeholder
 
 
 def test_init_player():
@@ -20,7 +20,7 @@ def test_map_fields_to_pixels():
 
 
 def test_minimaxbot_init_and_methods():
-    player = MinimaxBot(Color.WHITE, None, None)
+    player = MinimaxBot(Color.WHITE, Placeholder.DEPTH, Placeholder.T_LIMIT)
     assert player.ai
     assert player.color == Color.WHITE
     assert player.minimizing_or_maximizing(Color.WHITE)

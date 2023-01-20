@@ -29,3 +29,5 @@ class Color(Enum):
 class Placeholder(Enum):
     SCREEN = 1
     PIECE = 2
+    DEPTH = 3
+    T_LIMIT = 4

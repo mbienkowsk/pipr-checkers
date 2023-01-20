@@ -1,6 +1,6 @@
 from checkers.game import Game
 from checkers.player import Player, MinimaxBot
-from checkers.constants import Color, Placeholder, SLEEP_TIME_IN_PVB_GAME
+from checkers.constants import (Color, SLEEP_TIME_IN_PVB_GAME, Placeholder)
 
 
 def test_game_init(monkeypatch):
@@ -22,7 +22,7 @@ def test_game_init(monkeypatch):
 def test_game_interpret_clicked_location(monkeypatch):
     monkeypatch.setattr('checkers.game.Game.load_images', lambda x: None)
     player1 = Player(Color.WHITE)
-    player2 = MinimaxBot(Color.BLACK, None, None)
+    player2 = MinimaxBot(Color.BLACK, Placeholder.DEPTH, Placeholder.T_LIMIT)
     game = Game(Placeholder.SCREEN, [player1, player2])
     assert game.sleep_duration == SLEEP_TIME_IN_PVB_GAME
 
