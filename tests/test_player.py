@@ -20,7 +20,7 @@ def test_map_fields_to_pixels():
 
 
 def test_minimaxbot_init_and_methods():
-    player = MinimaxBot(Color.WHITE)
+    player = MinimaxBot(Color.WHITE, None, None)
     assert player.ai
     assert player.color == Color.WHITE
     assert player.minimizing_or_maximizing(Color.WHITE)
