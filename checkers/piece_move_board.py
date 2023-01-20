@@ -108,7 +108,6 @@ class Piece:
     def can_move_minus_y(self, attack=False):
         '''Returns a boolean determining whether the piece can move/attack
         onto a field with a lower y coordinate'''
-        # FIXME
         if self.move_constant == 1:
             return False
         if attack:
@@ -284,12 +283,6 @@ class Piece:
         y_to_draw = y * FIELD_SIZE + 0.5 * FIELD_SIZE
         return (x_to_draw, y_to_draw)
 
-    # def __eq__(self, other) -> bool:  FIXME
-    #     equal_x = self.x == other.x
-    #     equal_y = self.y == other.y
-    #     equal_color = self.color == other.color
-    #     return (equal_x and equal_y and equal_color)
-
     @property
     def value(self):
         '''Getter for the value attribute'''
@@ -445,10 +438,10 @@ class Board:
 
     @property
     def fields(self):
-        '''Getter for the fields parameter'''  # FIXME?
+        '''Getter for the fields parameter'''
         return self._fields
 
-    @fields.setter  # FIXME
+    @fields.setter
     def fields(self, new_fields):
         '''Setter for the fields parameter'''
         self._fields = new_fields
@@ -560,8 +553,7 @@ class Board:
     def feasible_locations_and_moves_for_piece(self, piece):
         '''Returns the locations and moves a piece can
         move to in the current round'''
-        self.update_possible_moves_by_colors(
-        )  # FIXME could be deleted?
+        self.update_possible_moves_by_colors()
         moves = self.moves_by_colors[piece.color][piece]
         locations = [move.new_cords for move in moves]
         return locations, moves
@@ -573,15 +565,14 @@ class Board:
         self.get_field_by_location(move.old_cords).piece = None
         self.get_field_by_location(move.new_cords).piece = piece
 
-    def can_piece_move(self, piece):    # FIXME COULD SIMPLIFY?
+    def can_piece_move(self, piece):
         '''Determines whether a piece can be moved during a player's turn
         If the piece can't attack and another one of its color can,
         returns False. Else, returns True
         '''
-        if self.mandatory_attacks[piece.color]:
-            if not piece.all_legal_attacking_moves(self):
-                return False
-        return True
+        if self.moves_by_colors[piece.color][piece]:
+            return True
+        return False
 
     def get_jumped_piece(self, move):
         '''Returns a piece that gets jumped over during the given move

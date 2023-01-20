@@ -2,7 +2,7 @@ import pygame
 from checkers.constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color
 from checkers.gui import draw_game_over_screen, draw_menu
 from checkers.game import Game
-from checkers.player import Player, MinimaxBot, Bot
+from checkers.player import Player, MinimaxBot, RandomBot
 from sys import exit
 
 
@@ -48,7 +48,7 @@ def main():
                             menu_active = False
                             game = Game(
                                 screen, [MinimaxBot(Color.WHITE),
-                                         Bot(Color.BLACK)])
+                                         RandomBot(Color.BLACK)])
                             game.draw_board()
 
             elif game_over_screen_active:
@@ -76,6 +76,11 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_running = False
+                        menu_active = True
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_position = pygame.mouse.get_pos()
