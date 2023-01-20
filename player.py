@@ -29,10 +29,19 @@ class Player:
 
 
 class Bot(Player):
-    #   FIXME
-
     def __init__(self, color, ai=True) -> None:
         super().__init__(color, ai)
+
+    @staticmethod
+    def map_field_cords_to_pixels(cords):
+        x, y = cords
+        return (x * FIELD_SIZE + 1 / 2 * FIELD_SIZE, y * FIELD_SIZE + 1 / 2 * FIELD_SIZE)
+
+
+class RandomBot(Bot):
+
+    def __init__(self, color) -> None:
+        super().__init__(color, ai=True)
 
     def click_random_piece(self, pieces: List[Piece]):  # maybe create a class variable to keep with the player and set it during the game?
         piece = pieces[randint(0, len(pieces) - 1)]
@@ -45,11 +54,6 @@ class Bot(Player):
         click_location = self.map_field_cords_to_pixels(field_to_move_cords)
         return click_location
 
-    @staticmethod
-    def map_field_cords_to_pixels(cords):
-        x, y = cords
-        return (x * FIELD_SIZE + 1 / 2 * FIELD_SIZE, y * FIELD_SIZE + 1 / 2 * FIELD_SIZE)
-
 
 class MinimaxBot(Bot):
     '''
@@ -57,11 +61,11 @@ class MinimaxBot(Bot):
     to make a move
 
     param color: color of the bot's pieces
-    type color: str # FIXME
+    type color: Color
     '''
 
-    def __init__(self, color, ai=True) -> None:
-        super().__init__(color, ai)
+    def __init__(self, color) -> None:
+        super().__init__(color, ai=True)
         self.times = list()
 
     def minimax(self, board: 'Board', depth, alpha=float('-inf'), beta=float('inf'), original_move=None):
@@ -134,7 +138,7 @@ class MinimaxBot(Bot):
                     break
             return min_eval[0], best_move
 
-    @staticmethod
+    @ staticmethod
     def minimizing_or_maximizing(color):
         '''
         Returns whether the player of a given color aims

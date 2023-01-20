@@ -24,3 +24,8 @@ MAX_MOVES_WITHOUT_ATTACKS = 50
 class Color(Enum):
     WHITE = 1
     BLACK = 2
+
+
+class Placeholder(Enum):
+    SCREEN = 1
+    PIECE = 2

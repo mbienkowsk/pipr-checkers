@@ -83,5 +83,3 @@ def test_all_possible_na_moves():
 def test_location_to_draw():
     piece = Piece(Color.WHITE, 5, 6)
     assert piece.location_to_draw() == (412.5, 487.5)
-
-

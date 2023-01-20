@@ -53,9 +53,6 @@ class Field:
         '''Returns the x and y coordinates of a field in a tuple'''
         return (self.x, self.y)
 
-    def __str__(self) -> str:  # FIXME
-        return f'[{self.location}]'
-
     @property
     def piece(self):
         '''Getter for the piece attribute'''

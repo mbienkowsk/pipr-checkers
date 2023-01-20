@@ -26,11 +26,11 @@ class Game:
     param num_of_bots: the number of computer controlled players in a game
     type num_of_bots: int
 
-    FIXME param player_color_dictionary: a dictionary mapping colors onto players
+    param player_color_dictionary: a dictionary mapping colors onto players
     type player_color_dictionary: dict
     '''
 
-    def __init__(self, screen, players, num_of_bots) -> None:
+    def __init__(self, screen, players) -> None:
         self.board = Board()
         self.screen = screen
         self.load_images()
@@ -41,6 +41,7 @@ class Game:
             player.color: player
             for player in self.players
         }
+        num_of_bots = sum([player.ai for player in self.players])
         if num_of_bots == 1:
             self.sleep_duration = SLEEP_TIME_IN_PVB_GAME
         elif num_of_bots == 2:
