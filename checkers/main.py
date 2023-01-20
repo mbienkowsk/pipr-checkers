@@ -10,9 +10,9 @@ from time import perf_counter, sleep
 
 
 def main():
-    '''The main function controlling the flow of the entire experience,
+    '''The main function controlling the flow of the entire program,
     starting with the menu, going on through the game and
-    ending at the game over screen. To play, run the file:)'''
+    ending at the game over screen. To play, run the file via terminal.'''
     pygame.init()
     game_running = False
     menu_active = True
