@@ -7,6 +7,7 @@ def test_board_init():
     board = Board()
     assert len(board.fields) == 8
     assert len(board.fields[0]) == 8
+    assert board.moves_without_attacks == 0
 
     expected_occupied_fields_coords = {
         (0, 1),
@@ -151,6 +152,7 @@ def test_jumped_piece_and_has_to_jump():
     first_piece = board.get_field_by_location((0, 5)).piece
     first_move = Move(False, (0, 5), (1, 4), first_piece)
     board.handle_move(first_move)
+    assert board.moves_without_attacks == 1
 
     second_piece = board.get_field_by_location((3, 2)).piece
     second_move = Move(False, (3, 2), (2, 3), second_piece)

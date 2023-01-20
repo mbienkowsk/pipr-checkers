@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 from field import Field
-from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS, Color
+from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS, Color, MAX_MOVES_WITHOUT_ATTACKS
 from copy import deepcopy
 
 
@@ -355,10 +355,17 @@ class Board:
 
     type turn: string FIXME
 
+    param moves_without_attacks: a counter keeping track of how many moves have been made
+    since the last attack. If it reaches 50, the game is drawn.
+    type moves_without_attacks: int
+
     param is_game_over: whether the game is over (can the player
     whoss turn it is make a move?)
-
     type is_game_over: bool
+
+    param mandatory_attacks: keeps the information whether a player of a certain color
+    has to attack during this turn or not.
+    type mandatory_attacks: dict
     '''
 
     def __init__(self) -> None:
@@ -370,6 +377,7 @@ class Board:
         self.moves_by_colors = dict()
         self.update_possible_moves_by_colors()
         self.turn = Color.WHITE
+        self._moves_without_attacks = 0
         self.is_game_over = False
         self._mandatory_attacks = {
             Color.WHITE: False,
@@ -454,6 +462,16 @@ class Board:
                 field_list.append(field)
         return field_list
 
+    @property
+    def moves_without_attacks(self):
+        '''Getter for the moves_without_attacks attribute'''
+        return self._moves_without_attacks
+
+    @moves_without_attacks.setter
+    def moves_without_attacks(self, value):
+        '''Setter for the moves_without_attacks attribute'''
+        self._moves_without_attacks = value
+
     def setup_pieces_by_colors(self):
         '''Sets up the self.pieces_by_colors dictionary at the start of a game'''
         pieces_by_colors = {
@@ -473,10 +491,6 @@ class Board:
     def all_black_pieces(self):
         '''Returns a list of all black pieces in a game.'''
         return self.pieces_by_colors[Color.BLACK]
-
-    def player_has_to_attack(self, color):  # MIGHT BE ABLE TO GET RID OF IT AND DO IT INSIDE OF UPDATE_MOVES FIXME
-        '''Checks whether a player has to attack during the current round, returns a boolean'''
-        return self.mandatory_attacks[color]
 
     def update_possible_moves_by_colors(self):
         '''Updates the possible_moves_by_colors parameter to reflect the current state of the board.
@@ -507,7 +521,7 @@ class Board:
             for piece in self.all_white_pieces():
                 moves_by_colors[Color.WHITE][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.WHITE][piece]))
 
-        if self.player_has_to_attack(Color.BLACK):
+        if self.mandatory_attacks[Color.BLACK]:
             for piece in self.all_black_pieces():
                 moves_by_colors[Color.BLACK][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.BLACK][piece]))
 
@@ -532,7 +546,7 @@ class Board:
         If the piece can't attack and another one of its color can,
         returns False. Else, returns True
         '''
-        if self.player_has_to_attack(piece.color):
+        if self.mandatory_attacks[piece.color]:
             if not piece.all_legal_attacking_moves(self):
                 return False
         return True
@@ -554,7 +568,8 @@ class Board:
             moving_piece.promote()
         self.change_turn()
         self.update_possible_moves_by_colors()
-        if not self.player_has_moving_options(self.turn):
+        self.moves_without_attacks += 1
+        if not self.player_has_moving_options(self.turn) or self.moves_without_attacks >= MAX_MOVES_WITHOUT_ATTACKS:
             self.is_game_over = True
 
     def handle_attacking_move(self, move):
@@ -567,6 +582,7 @@ class Board:
         if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
             moving_piece.promote()
         self.update_possible_moves_by_colors()
+        self.moves_without_attacks += 1
         if not moving_piece.all_legal_attacking_moves(self):
             self.change_turn()
             if not self.player_has_moving_options(self.turn):

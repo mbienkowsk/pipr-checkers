@@ -19,10 +19,6 @@ class Game:
     param selected_piece: the piece currently selected by the user
     type selected_piece: Piece
 
-    param moves_without_attacks: a counter keeping track of how many moves have been made
-    since the last attack. If it reaches 50, the game is drawn.
-    type moves_without_attacks: int
-
     param num_of_bots: the number of computer controlled players in a game
     type num_of_bots: int
 
@@ -36,7 +32,6 @@ class Game:
         self.load_images()
         self.players = players
         self.selected_piece = None
-        self.moves_without_attacks = 0
         self._player_color_dictionary = {
             player.color: player
             for player in self.players
@@ -48,6 +43,21 @@ class Game:
             self.sleep_duration = SLEEP_TIME_IN_BVB_GAME
         else:
             self.sleep_duration = None
+
+    @property
+    def selected_piece(self):
+        '''Getter for the selected_piece attribute'''
+        return self._selected_piece
+
+    @selected_piece.setter
+    def selected_piece(self, piece):
+        '''Setter for the selected_piece attribute'''
+        self._selected_piece = piece
+
+    @property
+    def player_color_dictionary(self):
+        '''Getter for player_color_dictionary'''
+        return self._player_color_dictionary
 
     def load_images(self):
         '''Load the images from the folder and return a dictionary to assign them'''
@@ -100,11 +110,6 @@ class Game:
         for field in possible_move_squares:
             self.highlight_field(field)
 
-    @property
-    def player_color_dictionary(self):
-        '''Getter for player_color_dictionary'''
-        return self._player_color_dictionary
-
     def handle_piece_click(self, clicked_piece):
         '''The method for handling an event when a given piece is clicked.'''
         self.board.update_possible_moves_by_colors()
@@ -133,12 +138,12 @@ class Game:
                 if move_to_make.attacking:
                     self.board.handle_attacking_move(move_to_make)
                     self.draw_board()
-                    self.moves_without_attacks = 0
+                    self.board.moves_without_attacks = 0
 
                 else:
                     self.board.handle_passive_move(move_to_make)
                     self.draw_board()
-                    self.moves_without_attacks += 1
+                    self.board.moves_without_attacks += 1
 
                 self.selected_piece = None
             else:

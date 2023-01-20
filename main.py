@@ -1,5 +1,5 @@
 import pygame
-from constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color
+from constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color, MAX_MOVES_WITHOUT_ATTACKS
 from gui import draw_game_over_screen, draw_menu
 from game import Game
 from player import Player, MinimaxBot, Bot
@@ -74,10 +74,10 @@ def main():
                     mouse_position = pygame.mouse.get_pos()
                     game.handle_mouse_click(mouse_position)
 
-            if game.moves_without_attacks >= 50 or game.board.is_game_over:
+            if game.board.is_game_over:
                 game_running = False
                 game_over_screen_active = True
-                if game.moves_without_attacks >= 50:  # FIXME
+                if game.board.moves_without_attacks >= MAX_MOVES_WITHOUT_ATTACKS:  # FIXME
                     print('tie')
 
         pygame.display.update()

@@ -7,8 +7,6 @@
     1. test player_possible_moves where a piece is blocked but exists
     2. tests for the piece and minimaxbot moving functions requiring a board import
 
-## Check whether player_has_to_attack can be simplified during update_possible_moves_by_colors - it would save a ton of time
-
 ## Come up with improvements to the evaluate_position function
 
 ## Implement the option to select a MINIMAX_DEPTH
@@ -16,20 +14,14 @@
 - terminal?
 - maybe stick with the time limit?
 
-## MAX_MOVES_WITHOUT_ATTACKS AS A CONSTANT
-
 ## MULTIPLE JUMPS POSSIBLE AT THE SAME TIME BUG??
-
-## co z random botem? podzielic sensowniej klasy
 
 ## all the fixmes
 
 ## usunac self.times z bota minimaxowego
 
-## GETTERS AND SETTERS FOR SELECTED PIECE
-
-## merge player_has_to_attack into the attr dict without having to call the function which acts like a getter
-
 ## FLAKE
 
 ## FOOKIN TYPE HINTS
+
+## move tests inside a designated folder

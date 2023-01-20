@@ -15,7 +15,6 @@ def test_game_init(monkeypatch):
     }
 
     assert not game.sleep_duration
-    assert game.moves_without_attacks == 0
     assert not game.selected_piece
     assert game.screen == Placeholder.SCREEN
 
