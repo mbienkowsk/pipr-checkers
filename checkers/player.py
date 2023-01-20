@@ -1,7 +1,7 @@
 from random import randint, shuffle
 from checkers.piece_move_board import Piece, Board
 from typing import List
-from checkers.constants import (FIELD_SIZE, MINIMAX_DEPTH,
+from checkers.constants import (FIELD_SIZE,
                                 SLEEP_TIME_IN_BVB_GAME, Color)
 from time import sleep, perf_counter
 
@@ -45,8 +45,6 @@ class RandomBot(Bot):
     def __init__(self, color) -> None:
         super().__init__(color, ai=True)
 
-    # maybe create a class variable to keep with the
-    # player and set it during the game?
     def click_random_piece(self, pieces: List[Piece]):
         piece = pieces[randint(0, len(pieces) - 1)]
         piece_cords = (piece.x, piece.y)
@@ -66,11 +64,15 @@ class MinimaxBot(Bot):
 
     param color: color of the bot's pieces
     type color: Color
+
+    param depth: the depth of the evaluating algorithm
+    type depth: int in range(1, 11)
     '''
 
-    def __init__(self, color) -> None:
+    def __init__(self, color, depth) -> None:
         super().__init__(color, ai=True)
         self.times = list()
+        self._depth = depth
 
     def minimax(self, board: 'Board', depth, alpha=float('-inf'),
                 beta=float('inf'), original_move=None):
@@ -163,7 +165,7 @@ class MinimaxBot(Bot):
         calculation and mapping the move into the pixel grid of the window
         '''
         start_time = perf_counter()
-        move = self.minimax(board, MINIMAX_DEPTH,
+        move = self.minimax(board, self.depth,
                             float('-inf'), float('inf'))[1]
         piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
         field_click_location = self.map_field_cords_to_pixels(move.new_cords)
@@ -176,3 +178,7 @@ class MinimaxBot(Bot):
 
     def average_move_time(self):
         return round(sum(self.times) / len(self.times), 3)
+
+    @property
+    def depth(self):
+        return self._depth

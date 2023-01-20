@@ -1,8 +1,9 @@
 import pygame
 from checkers.constants import (WIN_WIDTH, WIN_HEIGHT, BEIGE, TITLE_RECT_MID_X,
                                 TITLE_RECT_MID_Y, BUTTON_OUTLINE_HEIGHT,
-                                BUTTON_OUTLINE_WIDTH, LIGHT_BROWN)
+                                BUTTON_OUTLINE_WIDTH, LIGHT_BROWN, Color)
 from time import sleep
+from checkers.player import RandomBot, MinimaxBot
 
 
 def load_fonts():
@@ -96,3 +97,40 @@ def draw_game_over_screen(window):
     window.blit(go_screen, (0, 0))
     window.blit(game_over_surf, game_over_rect)
     window.blit(message_surf, message_rect)
+
+
+def get_bot_settings_from_the_user(colors):
+    '''Method uses input() to create a Bot object with the chosen
+    attributes. A player gets to choose whether the bot is the random
+    or the minimax bot and if it is a minimax bot, specify its depth.
+    '''
+    print('-' * 30)
+    settings = list()
+    for color in colors:
+        if color == Color.WHITE:
+            color_string = 'white'
+        else:
+            color_string = 'black'
+        bot_choice = None
+        while bot_choice not in ('M', 'R', 'm', 'r'):
+            bot_choice = input(
+                f'Enter who should play with the {color_string} pieces. ' +
+                'M for the minimax bot, R for the random bot.   ')
+            if bot_choice not in ('M', 'R', 'm', 'r'):
+                print('Invalid choice:(')
+        if bot_choice in ('R', 'r'):
+            settings.append(RandomBot(color))
+        else:
+            minimax_depth = None
+            while minimax_depth not in [str(num) for num in range(1, 11)]:
+                minimax_depth = input(
+                    f'Enter the depth for the {color_string} minimax bot. ' +
+                    'Accepted depth is a number from 1 to 10    ')
+                if minimax_depth not in [str(num) for num in range(1, 11)]:
+                    print('Invalid depth:(')
+            settings.append(MinimaxBot(color, int(minimax_depth)))
+    if len(colors) == 1:
+        print('Good luck!')
+    else:
+        print('Enjoy the game!')
+    return settings
