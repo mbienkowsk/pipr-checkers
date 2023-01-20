@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 from typing import Tuple
-from field import Field
-from constants import BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS, NUM_OF_ROWS, Color, MAX_MOVES_WITHOUT_ATTACKS
+from checkers.field import Field
+from checkers.constants import (BEIGE, BROWN, FIELD_SIZE, NUM_OF_COLUMNS,
+                                NUM_OF_ROWS, Color, MAX_MOVES_WITHOUT_ATTACKS)
 from copy import deepcopy
 
 
 class Piece:
     '''Class representing a checkers piece
 
-    param value: how much is the piece worth during the evaluation of a position
+    param value: how much is the piece worth during the
+    evaluation of a position
     type value: int
 
     param king: whether the piece is a king piece
@@ -23,7 +25,8 @@ class Piece:
     param y: the piece's row number
     type y: int
 
-    param image_dict_ind: the index mapping the piece onto an image to display in game
+    param image_dict_ind: the index mapping the piece
+    onto an image to display in game
     type image_dict_int: str
     '''
 
@@ -74,8 +77,8 @@ class Piece:
             return -1 if self.color == Color.WHITE else 1
 
     def can_move_plus_x(self, attack=False):
-        '''Returns a boolean determining whether the piece has the space to move/attack
-        onto a field with a higher x coordinate'''
+        '''Returns a boolean determining whether the piece
+        has the space to move/attack onto a field with a higher x coordinate'''
         if attack:
             cols_where_cannot = [NUM_OF_COLUMNS - 2, NUM_OF_COLUMNS - 1]
         else:
@@ -83,8 +86,8 @@ class Piece:
         return self.x not in cols_where_cannot
 
     def can_move_minus_x(self, attack=False):
-        '''Returns a boolean determining whether the piece has the space to move/attack
-        onto a field with a lower x coordinate'''
+        '''Returns a boolean determining whether the piece
+        has the space to move/attack onto a field with a lower x coordinate'''
         if attack:
             cols_where_cannot = [0, 1]
         else:
@@ -115,8 +118,9 @@ class Piece:
         return self.y not in rows_where_cannot
 
     def all_possible_non_attacking_moves(self):
-        '''Returns the basic forward (and backward if it's a king) moves a piece
-        could possibly make, not taking in consideration whether they're legal
+        '''Returns the basic forward (and backward if it's a king) moves a
+        piece could possibly make, not taking in consideration whether they're
+        legal
         '''
         moves = list()
         x = self.x
@@ -148,9 +152,12 @@ class Piece:
         return legal_moves
 
     def can_attack_plus_plus(self, board: 'Board'):
-        '''Checks whether it's possible to attack a field with coordinates (x+1, y+1)
+        '''Checks whether it's possible to attack a field with coordinates
+        (x+1, y+1). If an enemy piece is on the field and the field behind
+        it is empty, returns True
         '''
-        if not (self.can_move_plus_x(attack=True) and self.can_move_plus_y(attack=True)):
+        if not (self.can_move_plus_x(attack=True)
+                and self.can_move_plus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -162,15 +169,18 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
+                if (field_to_attack.piece.color != self.color
+                        and not field_to_jump_to.is_taken()):
                     return True
                 return False
 
     def can_attack_plus_minus(self, board: 'Board'):
-        '''Checks whether it's possible to attack a field with coordinates (x+1, y-1)
-        if an enemy piece is on the field and the field behind it is empty, returns True
+        '''Checks whether it's possible to attack a field with coordinates
+        (x+1, y-1). If an enemy piece is on the field and the field behind
+        it is empty, returns True
         '''
-        if not (self.can_move_plus_x(attack=True) and self.can_move_minus_y(attack=True)):
+        if not (self.can_move_plus_x(attack=True)
+                and self.can_move_minus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -182,15 +192,18 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
+                if (field_to_attack.piece.color != self.color
+                        and not field_to_jump_to.is_taken()):
                     return True
                 return False
 
     def can_attack_minus_plus(self, board: 'Board'):
-        '''Checks whether it's possible to attack a field with coordinates (x-1, y+1)
-        if an enemy piece is on the field and the field behind it is empty, returns True
+        '''Checks whether it's possible to attack a field with coordinates
+        (x-1, y+1). If an enemy piece is on the field and the field behind
+        it is empty, returns True
         '''
-        if not (self.can_move_minus_x(attack=True) and self.can_move_plus_y(attack=True)):
+        if not (self.can_move_minus_x(attack=True)
+                and self.can_move_plus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -202,15 +215,18 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
+                if (field_to_attack.piece.color != self.color
+                        and not field_to_jump_to.is_taken()):
                     return True
                 return False
 
     def can_attack_minus_minus(self, board: 'Board'):
-        '''Checks whether it's possible to attack a field with coordinates (x-1, y-1)
-        if an enemy piece is on the field and the field behind it is empty, returns True
+        '''Checks whether it's possible to attack a field with coordinates
+        (x-1, y-1). If an enemy piece is on the field and the field behind
+        it is empty, returns True
         '''
-        if not (self.can_move_minus_x(attack=True) and self.can_move_minus_y(attack=True)):
+        if not (self.can_move_minus_x(attack=True)
+                and self.can_move_minus_y(attack=True)):
             return False
         else:
             field_to_attack = board.get_field_by_location(
@@ -222,29 +238,35 @@ class Piece:
             if not field_to_attack.is_taken():
                 return False
             else:
-                if field_to_attack.piece.color != self.color and not field_to_jump_to.is_taken():
+                if (field_to_attack.piece.color != self.color
+                        and not field_to_jump_to.is_taken()):
                     return True
                 return False
 
     def all_legal_attacking_moves(self, board: 'Board'):
         '''
-        Returns a list of legal attacking moves a piece can make on a given board
+        Returns a list of legal attacking moves a piece can make on a given
+        board
         '''
         legal_moves = []
         if self.can_attack_plus_plus(board):
-            legal_moves.append(Move(True, self.location, (self.x + 2, self.y + 2), self))
+            legal_moves.append(
+                Move(True, self.location, (self.x + 2, self.y + 2), self))
         if self.can_attack_minus_plus(board):
-            legal_moves.append(Move(True, self.location, (self.x - 2, self.y + 2), self))
+            legal_moves.append(
+                Move(True, self.location, (self.x - 2, self.y + 2), self))
         if self.can_attack_plus_minus(board):
-            legal_moves.append(Move(True, self.location, (self.x + 2, self.y - 2), self))
+            legal_moves.append(
+                Move(True, self.location, (self.x + 2, self.y - 2), self))
         if self.can_attack_minus_minus(board):
-            legal_moves.append(Move(True, self.location, (self.x - 2, self.y - 2), self))
+            legal_moves.append(
+                Move(True, self.location, (self.x - 2, self.y - 2), self))
         return legal_moves
 
     def all_possible_legal_moves(self, board: 'Board'):
         '''Returns the list of potential legal moves a piece can make,
-        taking into consideration the fact that if there are any possible attacks,
-        they have to be executed first
+        taking into consideration the fact that if there are any possible
+        attacks, they have to be executed first
         '''
         if self.all_legal_attacking_moves(board):
             return self.all_legal_attacking_moves(board)
@@ -253,8 +275,9 @@ class Piece:
 
     def location_to_draw(self):
         '''
-        Maps the row and column of the piece to a center of its corresponding square
-        in the gui checkerboard - the place where the piece is supposed to be displayed
+        Maps the row and column of the piece to a center of its corresponding
+        square in the gui checkerboard - the place where the piece is supposed
+        to be displayed
         '''
         x, y = self.x, self.y
         x_to_draw = x * FIELD_SIZE + 0.5 * FIELD_SIZE
@@ -309,7 +332,8 @@ class Piece:
 
     @property
     def location(self):
-        '''Returns the location of a piece - a tuple of its x and y coordinates'''
+        '''Returns the location of a piece - a tuple of its
+        x and y coordinates'''
         return (self.x, self.y)
 
 
@@ -353,18 +377,18 @@ class Board:
     param turn: the color of the player who is supposed to move at
     the moment
 
-    type turn: string FIXME
+    type turn: Color
 
-    param moves_without_attacks: a counter keeping track of how many moves have been made
-    since the last attack. If it reaches 50, the game is drawn.
+    param moves_without_attacks: a counter keeping track of how many moves
+    have been made since the last attack. If it reaches 50, the game is drawn.
     type moves_without_attacks: int
 
     param is_game_over: whether the game is over (can the player
     whoss turn it is make a move?)
     type is_game_over: bool
 
-    param mandatory_attacks: keeps the information whether a player of a certain color
-    has to attack during this turn or not.
+    param mandatory_attacks: keeps the information whether a player of a
+    certain color has to attack during this turn or not.
     type mandatory_attacks: dict
     '''
 
@@ -385,11 +409,7 @@ class Board:
         }
 
     def get_field_by_location(self, location) -> 'Field':
-        '''Returns the field object at the given x, y location
-
-        raises NonexistingFieldError if the given location is out of the 0-7 index bounds,
-        which means no such field exists on the 8x8 board
-        '''
+        '''Returns the field object at the given x, y location'''
         for field in self.one_dimensional_field_list:
             if field.location == location:
                 return field
@@ -407,15 +427,14 @@ class Board:
                     self.fields[i].append(Field(BROWN, i, j))
 
     def _setup_pieces(self):
-        '''Sets up the pieces at the beginning of a game to their default positions
-        '''
+        '''Sets up the pieces at the beginning of a game to their
+        default positions'''
         for i in range(3):
             for j in range(8):
                 current_field = self.fields[j][i]
                 if current_field.color == BROWN:
                     piece = Piece(Color.BLACK, j, i)
                     current_field.piece = piece
-                    # self.player_by_color(Color.BLACK).pieces.append(piece) FIXME
 
         for i in range(5, 8):
             for j in range(8):
@@ -423,7 +442,6 @@ class Board:
                 if current_field.color == BROWN:
                     piece = Piece(Color.WHITE, j, i)
                     current_field.piece = piece
-                    # self.player_by_color(Color.WHITE).pieces.append(piece) FIXME
 
     @property
     def fields(self):
@@ -455,7 +473,8 @@ class Board:
     @property
     def one_dimensional_field_list(self):
         '''Returns the fields of the board in a list with length of 64
-        so in most cases one for loop is used instead of 2 when iterating over them.'''
+        so in most cases one for loop is used instead of 2 when iterating
+        over them.'''
         field_list = list()
         for row in self.fields:
             for field in row:
@@ -473,7 +492,7 @@ class Board:
         self._moves_without_attacks = value
 
     def setup_pieces_by_colors(self):
-        '''Sets up the self.pieces_by_colors dictionary at the start of a game'''
+        '''Sets up the pieces_by_colors dictionary at the start of a game'''
         pieces_by_colors = {
             Color.WHITE: [],
             Color.BLACK: []
@@ -493,7 +512,8 @@ class Board:
         return self.pieces_by_colors[Color.BLACK]
 
     def update_possible_moves_by_colors(self):
-        '''Updates the possible_moves_by_colors parameter to reflect the current state of the board.
+        '''Updates the possible_moves_by_colors parameter to reflect the
+        current state of the board.
         '''
         moves_by_colors = {
             Color.WHITE: {},
@@ -506,30 +526,42 @@ class Board:
         }
 
         for piece in self.all_white_pieces():
-            moves_by_colors[Color.WHITE][piece] = piece.all_possible_legal_moves(self)
-            if not all([not move.attacking for move in moves_by_colors[Color.WHITE][piece]]):
+            moves_by_colors[Color.WHITE][piece] = (piece.
+                                                   all_possible_legal_moves(
+                                                       self))
+            if not all([not move.attacking
+                        for move in moves_by_colors[Color.WHITE][piece]]):
                 new_mandatory_attacks[Color.WHITE] = True
 
         for piece in self.all_black_pieces():
-            moves_by_colors[Color.BLACK][piece] = piece.all_possible_legal_moves(self)
-            if not all([not move.attacking for move in moves_by_colors[Color.BLACK][piece]]):
+            moves_by_colors[Color.BLACK][piece] = (piece.
+                                                   all_possible_legal_moves(
+                                                       self))
+            if not all([not move.attacking
+                        for move in moves_by_colors[Color.BLACK][piece]]):
                 new_mandatory_attacks[Color.BLACK] = True
 
         self.mandatory_attacks = new_mandatory_attacks
 
         if self.mandatory_attacks[Color.WHITE]:
             for piece in self.all_white_pieces():
-                moves_by_colors[Color.WHITE][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.WHITE][piece]))
+                moves_by_colors[Color.WHITE][piece] = list(
+                    filter(lambda x: x.attacking,
+                           moves_by_colors[Color.WHITE][piece]))
 
         if self.mandatory_attacks[Color.BLACK]:
             for piece in self.all_black_pieces():
-                moves_by_colors[Color.BLACK][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.BLACK][piece]))
+                moves_by_colors[Color.BLACK][piece] = list(
+                    filter(lambda x: x.attacking,
+                           moves_by_colors[Color.BLACK][piece]))
 
         self.moves_by_colors = moves_by_colors
 
     def feasible_locations_and_moves_for_piece(self, piece):
-        '''Returns the locations and moves a piece can move to in the current round'''
-        self.update_possible_moves_by_colors()  # FIXME if we get set the has_to_attack inside of update, we don't have to run this one
+        '''Returns the locations and moves a piece can
+        move to in the current round'''
+        self.update_possible_moves_by_colors(
+        )  # FIXME could be deleted?
         moves = self.moves_by_colors[piece.color][piece]
         locations = [move.new_cords for move in moves]
         return locations, moves
@@ -541,7 +573,7 @@ class Board:
         self.get_field_by_location(move.old_cords).piece = None
         self.get_field_by_location(move.new_cords).piece = piece
 
-    def can_piece_move(self, piece):  # MIGHT BE ABLE TO SIMPLIFY AFTER THE CHANGES ABOVE
+    def can_piece_move(self, piece):    # FIXME COULD SIMPLIFY?
         '''Determines whether a piece can be moved during a player's turn
         If the piece can't attack and another one of its color can,
         returns False. Else, returns True
@@ -552,10 +584,12 @@ class Board:
         return True
 
     def get_jumped_piece(self, move):
-        '''Returns a piece that gets jumped over during the given move so it can be removed'''
+        '''Returns a piece that gets jumped over during the given move
+        so it can be removed'''
         old_x, old_y = move.old_cords
         next_x, next_y = move.new_cords
-        jumped_x, jumped_y = int((old_x + next_x) / 2), int((old_y + next_y) / 2)
+        jumped_x, jumped_y = int(
+            (old_x + next_x) / 2), int((old_y + next_y) / 2)
         piece = self.get_field_by_location((jumped_x, jumped_y)).piece
         return piece
 
@@ -564,22 +598,25 @@ class Board:
         changing the turn etc.'''
         moving_piece = move.piece
         self.update_piece_location(moving_piece, move)
-        if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
+        if (moving_piece.eligible_for_promotion_after_move(move)
+                and not moving_piece.king):
             moving_piece.promote()
         self.change_turn()
         self.update_possible_moves_by_colors()
         self.moves_without_attacks += 1
-        if not self.player_has_moving_options(self.turn) or self.moves_without_attacks >= MAX_MOVES_WITHOUT_ATTACKS:
+        if (not self.player_has_moving_options(self.turn)
+                or self.moves_without_attacks >= MAX_MOVES_WITHOUT_ATTACKS):
             self.is_game_over = True
 
     def handle_attacking_move(self, move):
-        '''Handles an attacking move move and its consequences including promotion,
+        '''Handles an attacking move and its consequences including promotion,
         changing the turn etc.'''
         moving_piece = move.piece
         jumped_piece = self.get_jumped_piece(move)
         self.delete_piece(jumped_piece)
         self.update_piece_location(moving_piece, move)
-        if moving_piece.eligible_for_promotion_after_move(move) and not moving_piece.king:
+        if (moving_piece.eligible_for_promotion_after_move(move)
+                and not moving_piece.king):
             moving_piece.promote()
         self.update_possible_moves_by_colors()
         self.moves_without_attacks += 1
@@ -589,23 +626,25 @@ class Board:
                 self.is_game_over = True
 
     def handle_move(self, move):
-        '''Compiles handle_attacking and passive move methods into one to simplify
-        the code'''
+        '''Compiles handle_attacking and passive move methods into one to
+        simplify the code'''
         if move.attacking:
             self.handle_attacking_move(move)
         else:
             self.handle_passive_move(move)
 
     def all_possible_children_boards(self, color_to_move):
-        '''Returns all possible boards that could derive from the possible moves
-        of a player with a given color
+        '''Returns all possible boards that could derive from the possible
+        moves of a player with a given color
         '''
         possible_boards = []
         for piece in self.moves_by_colors[color_to_move].keys():
             for move in self.moves_by_colors[color_to_move][piece]:
                 temp_board = deepcopy(self)
-                temp_piece = temp_board.get_field_by_location((piece.x, piece.y)).piece
-                temp_move = Move(move.attacking, move.old_cords, move.new_cords, temp_piece)
+                temp_piece = temp_board.get_field_by_location(
+                    (piece.x, piece.y)).piece
+                temp_move = Move(move.attacking, move.old_cords,
+                                 move.new_cords, temp_piece)
                 temp_board.handle_move(temp_move)
                 possible_boards.append((temp_board, move))
         return possible_boards
@@ -613,39 +652,50 @@ class Board:
     def evaluate_position(self):
         '''Evaluates the current situation on the board
         Positive evaluation means white has the edge, negative means
-        black does. 0 Means the position is even. The methodology I used is described
-        in the project's documentation'''
+        black does. 0 Means the position is even.'''
         if self.is_game_over:
             if self.winner() == Color.WHITE:
                 return float('inf')
             elif self.winner() == Color.BLACK:
                 return float('-inf')
+            else:
+                return 0
         else:
             evaluation = 0
-            # heuristics from http://www.cs.columbia.edu/~devans/TIC/AB.html FIXME
-            sum_of_white_pieces = sum(piece.value for piece in self.all_white_pieces())
-            sum_of_black_pieces = sum(piece.value for piece in self.all_black_pieces())
+            sum_of_white_pieces = sum(
+                piece.value for piece in self.all_white_pieces())
+            sum_of_black_pieces = sum(
+                piece.value for piece in self.all_black_pieces())
             evaluation += (sum_of_white_pieces - sum_of_black_pieces)
 
-            # white_progression_list = [7 - piece.y for piece in self.all_white_pieces() if not piece.king]
-            # average_progression_white = sum(white_progression_list) / len(white_progression_list) if white_progression_list else 0
+            # white_progress_list = [7 - piece.y
+            #                        for piece in self.all_white_pieces()
+            #                        if not piece.king]
+            # if white_progress_list:
+            #     average_progression_white = (
+            #         sum(white_progress_list) / len(white_progress_list))
+            # else:
+            #     average_progression_white = 0
 
-            # black_progression_list = [piece.y for piece in self.all_black_pieces() if not piece.king]
-            # average_progression_black = sum(black_progression_list) / len(black_progression_list) if black_progression_list else 0
+            # black_progression_list = [
+            #     piece.y for piece in self.all_black_pieces()
+            # if not piece.king]
+            # if black_progression_list:
+            #     average_progression_black = sum(
+            #         black_progression_list) / len(black_progression_list)
+            # else:
+            #     average_progression_black = 0
 
-            # evaluation += (average_progression_white - average_progression_black)
-
-            # second_two_digits = average_progression_white - average_progression_black
-            # if second_two_digits > 0:
-            #     second_two_digits += 50 # any other way to
+            # evaluation += (average_progression_white -
+            #                average_progression_black)
 
             #   to adjust later for a more exact evaluation
             return evaluation
 
     def player_has_moving_options(self, color):
-        '''Checks whether a player with a given color has any possible moving options
-        If he doesn't he lost the game.
-        returns a boolean value'''
+        '''Checks whether a player with a given color has any possible
+        moving options. If he doesn't, he lost the game.
+        Returns a boolean value'''
         player_dict = self.moves_by_colors[color]
         for value in player_dict.values():
             if len(value) > 0:

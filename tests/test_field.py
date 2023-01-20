@@ -1,6 +1,6 @@
-from constants import BEIGE, Placeholder
+from checkers.constants import BEIGE, Placeholder
 
-from field import Field
+from checkers.field import Field
 
 
 def test_init():

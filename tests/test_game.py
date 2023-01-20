@@ -1,10 +1,10 @@
-from game import Game
-from player import Player, MinimaxBot
-from constants import Color, Placeholder, SLEEP_TIME_IN_PVB_GAME
+from checkers.game import Game
+from checkers.player import Player, MinimaxBot
+from checkers.constants import Color, Placeholder, SLEEP_TIME_IN_PVB_GAME
 
 
 def test_game_init(monkeypatch):
-    monkeypatch.setattr('game.Game.load_images', lambda x: None)
+    monkeypatch.setattr('checkers.game.Game.load_images', lambda x: None)
     player1 = Player(Color.WHITE)
     player2 = Player(Color.BLACK)
     game = Game(Placeholder.SCREEN, [player1, player2])
@@ -20,7 +20,7 @@ def test_game_init(monkeypatch):
 
 
 def test_game_interpret_clicked_location(monkeypatch):
-    monkeypatch.setattr('game.Game.load_images', lambda x: None)
+    monkeypatch.setattr('checkers.game.Game.load_images', lambda x: None)
     player1 = Player(Color.WHITE)
     player2 = MinimaxBot(Color.BLACK)
     game = Game(Placeholder.SCREEN, [player1, player2])
@@ -29,4 +29,5 @@ def test_game_interpret_clicked_location(monkeypatch):
     click_location_1 = (70, 70)
     clicked_field = game.board.get_field_by_location((0, 0))
     clicked_piece = clicked_field.piece
-    assert game.interpret_clicked_pixel_location(click_location_1) == (clicked_field, clicked_piece)
+    assert (game.interpret_clicked_pixel_location(click_location_1)
+            == (clicked_field, clicked_piece))

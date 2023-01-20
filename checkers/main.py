@@ -1,8 +1,8 @@
 import pygame
-from constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color, MAX_MOVES_WITHOUT_ATTACKS
-from gui import draw_game_over_screen, draw_menu
-from game import Game
-from player import Player, MinimaxBot, Bot
+from checkers.constants import WIN_HEIGHT, WIN_WIDTH, MAX_FPS, Color
+from checkers.gui import draw_game_over_screen, draw_menu
+from checkers.game import Game
+from checkers.player import Player, MinimaxBot, Bot
 from sys import exit
 
 
@@ -32,17 +32,23 @@ def main():
                         if pvp_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player(Color.WHITE), Player(Color.BLACK)], 0)
+                            game = Game(
+                                screen, [Player(Color.WHITE),
+                                         Player(Color.BLACK)])
                             game.draw_board()
                         if pvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [Player(Color.WHITE), MinimaxBot(Color.BLACK)], 1)
+                            game = Game(
+                                screen, [Player(Color.WHITE),
+                                         MinimaxBot(Color.BLACK)])
                             game.draw_board()
                         if bvb_button.collidepoint(mouse_position):
                             game_running = True
                             menu_active = False
-                            game = Game(screen, [MinimaxBot(Color.WHITE), Bot(Color.BLACK)], 2)
+                            game = Game(
+                                screen, [MinimaxBot(Color.WHITE),
+                                         Bot(Color.BLACK)])
                             game.draw_board()
 
             elif game_over_screen_active:
@@ -60,7 +66,8 @@ def main():
             if game.player_color_dictionary[game.board.turn].ai:
                 bot_to_move = game.player_color_dictionary[game.board.turn]
                 if isinstance(bot_to_move, MinimaxBot):
-                    piece_click, field_click = bot_to_move.make_move(game.board)
+                    piece_click, field_click = bot_to_move.make_move(
+                        game.board)
                     game.handle_mouse_click(piece_click)
                     game.handle_mouse_click(field_click)
                 else:
@@ -77,8 +84,6 @@ def main():
             if game.board.is_game_over:
                 game_running = False
                 game_over_screen_active = True
-                if game.board.moves_without_attacks >= MAX_MOVES_WITHOUT_ATTACKS:  # FIXME
-                    print('tie')
 
         pygame.display.update()
         clock.tick(MAX_FPS)

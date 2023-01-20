@@ -1,5 +1,5 @@
-from piece_move_board import Piece, Move
-from constants import Color
+from checkers.piece_move_board import Piece, Move
+from checkers.constants import Color
 
 
 def test_init():

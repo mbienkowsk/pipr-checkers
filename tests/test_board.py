@@ -1,5 +1,5 @@
-from piece_move_board import Board, Move  # , Piece
-from constants import Color, BROWN, BEIGE
+from checkers.piece_move_board import Board, Move
+from checkers.constants import Color, BROWN, BEIGE
 from copy import copy
 
 
@@ -41,11 +41,13 @@ def test_board_init():
         for field in row:
             if field.is_taken():
                 actual_occupied_field_coords.add(field.location)
-    assert len(expected_occupied_fields_coords) == len(actual_occupied_field_coords)
+    assert len(expected_occupied_fields_coords) == len(
+        actual_occupied_field_coords)
     assert expected_occupied_fields_coords == actual_occupied_field_coords
     assert not board.is_game_over
     assert board.turn == Color.WHITE
-    assert not (board.mandatory_attacks[Color.WHITE] and board.mandatory_attacks[Color.BLACK])
+    assert not (board.mandatory_attacks[Color.WHITE]
+                and board.mandatory_attacks[Color.BLACK])
 
 
 def test_get_field_by_location():
@@ -94,10 +96,13 @@ def test_all_pieces_of_color_x():
 def test_update_possible_moves_by_colors():
     board = Board()
     piece_to_move = board.get_field_by_location((0, 5)).piece
-    board.handle_move(Move(False, piece_to_move.location, (1, 4), piece_to_move))
+    board.handle_move(
+        Move(False, piece_to_move.location, (1, 4), piece_to_move))
     assert len(board.moves_by_colors[piece_to_move.color][piece_to_move]) == 2
-    assert Move(False, (1, 4), (0, 3), piece_to_move) in board.moves_by_colors[piece_to_move.color][piece_to_move]
-    assert Move(False, (1, 4), (2, 3), piece_to_move) in board.moves_by_colors[piece_to_move.color][piece_to_move]
+    assert (Move(False, (1, 4), (0, 3), piece_to_move) in
+            board.moves_by_colors[piece_to_move.color][piece_to_move])
+    assert (Move(False, (1, 4), (2, 3), piece_to_move) in
+            board.moves_by_colors[piece_to_move.color][piece_to_move])
 
 
 def test_handle_move():
@@ -105,7 +110,8 @@ def test_handle_move():
     piece_to_move = board.get_field_by_location((0, 5)).piece
     possible_moves = board.moves_by_colors[piece_to_move.color][piece_to_move]
     assert len(possible_moves) == 1
-    board.handle_move(Move(False, piece_to_move.location, (1, 4), piece_to_move))
+    board.handle_move(
+        Move(False, piece_to_move.location, (1, 4), piece_to_move))
     assert piece_to_move.location == (1, 4)
     assert board.turn == Color.BLACK
 
@@ -114,8 +120,10 @@ def test_all_possible_children_boards():
     board = Board()
     number_of_moves_for_white = 0
     for piece in board.all_white_pieces():
-        number_of_moves_for_white += len(board.moves_by_colors[Color.WHITE][piece])
-    assert len(board.all_possible_children_boards(Color.WHITE)) == number_of_moves_for_white
+        number_of_moves_for_white += len(
+            board.moves_by_colors[Color.WHITE][piece])
+    assert len(board.all_possible_children_boards(
+        Color.WHITE)) == number_of_moves_for_white
 
 
 def test_evaluate_position():

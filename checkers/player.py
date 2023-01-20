@@ -1,7 +1,8 @@
 from random import randint, shuffle
-from piece_move_board import Piece, Board
+from checkers.piece_move_board import Piece, Board
 from typing import List
-from constants import FIELD_SIZE, MINIMAX_DEPTH, SLEEP_TIME_IN_BVB_GAME, Color
+from checkers.constants import (FIELD_SIZE, MINIMAX_DEPTH,
+                                SLEEP_TIME_IN_BVB_GAME, Color)
 from time import sleep, perf_counter
 
 
@@ -35,7 +36,8 @@ class Bot(Player):
     @staticmethod
     def map_field_cords_to_pixels(cords):
         x, y = cords
-        return (x * FIELD_SIZE + 1 / 2 * FIELD_SIZE, y * FIELD_SIZE + 1 / 2 * FIELD_SIZE)
+        return (x * FIELD_SIZE + 1 / 2 * FIELD_SIZE,
+                y * FIELD_SIZE + 1 / 2 * FIELD_SIZE)
 
 
 class RandomBot(Bot):
@@ -43,7 +45,9 @@ class RandomBot(Bot):
     def __init__(self, color) -> None:
         super().__init__(color, ai=True)
 
-    def click_random_piece(self, pieces: List[Piece]):  # maybe create a class variable to keep with the player and set it during the game?
+    # maybe create a class variable to keep with the
+    # player and set it during the game?
+    def click_random_piece(self, pieces: List[Piece]):
         piece = pieces[randint(0, len(pieces) - 1)]
         piece_cords = (piece.x, piece.y)
         click_location = self.map_field_cords_to_pixels(piece_cords)
@@ -68,7 +72,8 @@ class MinimaxBot(Bot):
         super().__init__(color, ai=True)
         self.times = list()
 
-    def minimax(self, board: 'Board', depth, alpha=float('-inf'), beta=float('inf'), original_move=None):
+    def minimax(self, board: 'Board', depth, alpha=float('-inf'),
+                beta=float('inf'), original_move=None):
         '''
         The function used to determine which move is the best for the bot
         param: type
@@ -99,7 +104,8 @@ class MinimaxBot(Bot):
 
             else:
                 for position, move in possible_children:
-                    evaluation = self.minimax(position, depth - 1, alpha, beta, move)
+                    evaluation = self.minimax(
+                        position, depth - 1, alpha, beta, move)
                     if evaluation[0] == max_eval[0] and best_move is None:
                         max_eval = evaluation
                         best_move = move
@@ -123,10 +129,11 @@ class MinimaxBot(Bot):
                 return only_board.evaluate_position(), only_move
 
             shuffle(possible_children)
-            #   to make the game non deterministic in positions in which there's
+            #   to make the game non deterministic in positions with
             #   no clear winning/advantageous move
             for position, move in possible_children:
-                evaluation = self.minimax(position, depth - 1, alpha, beta, move)
+                evaluation = self.minimax(
+                    position, depth - 1, alpha, beta, move)
                 if evaluation[0] == min_eval[0] and best_move is None:
                     min_eval = evaluation
                     best_move = move
@@ -156,7 +163,8 @@ class MinimaxBot(Bot):
         calculation and mapping the move into the pixel grid of the window
         '''
         start_time = perf_counter()
-        move = self.minimax(board, MINIMAX_DEPTH, float('-inf'), float('inf'))[1]
+        move = self.minimax(board, MINIMAX_DEPTH,
+                            float('-inf'), float('inf'))[1]
         piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
         field_click_location = self.map_field_cords_to_pixels(move.new_cords)
         stop_time = perf_counter()

@@ -1,5 +1,5 @@
-from player import Player, RandomBot, MinimaxBot
-from constants import Color
+from checkers.player import Player, RandomBot, MinimaxBot
+from checkers.constants import Color
 
 
 def test_init_player():
