@@ -15,7 +15,7 @@ class Piece:
     type king: bool
 
     param color: the color of the piece
-    type color: str FIXME
+    type color: Color
 
     param x: the piece's column number
     type x: int
@@ -370,6 +370,10 @@ class Board:
         # we'll think of a better way to evaluate a turn in a board for the algorithm, but for now FIXME
         self.turn = Color.WHITE
         self.is_game_over = False
+        self._mandatory_attacks = {
+            Color.WHITE: False,
+            Color.BLACK: False
+        }
 
     def get_field_by_location(self, location) -> 'Field':
         '''Returns the field object at the given x, y location
@@ -421,6 +425,14 @@ class Board:
     def fields(self, new_fields):
         '''Setter for the fields parameter'''
         self._fields = new_fields
+
+    @property
+    def mandatory_attacks(self):
+        return self._mandatory_attacks
+
+    @mandatory_attacks.setter
+    def mandatory_attacks(self, new_value):
+        self._mandatory_attacks = new_value
 
     def __str__(self) -> str:
         #   to delete later, for testing purposes FIXME
@@ -475,12 +487,7 @@ class Board:
 
     def player_has_to_attack(self, color):  # MIGHT BE ABLE TO GET RID OF IT AND DO IT INSIDE OF UPDATE_MOVES FIXME
         '''Checks whether a player has to attack during the current round, returns a boolean'''
-        player_dict = self.moves_by_colors[color]
-        for value in player_dict.values():
-            for move in value:
-                if move.attacking:
-                    return True
-        return False
+        return self.mandatory_attacks[color]
 
     def update_possible_moves_by_colors(self):
         '''Updates the possible_moves_by_colors parameter to reflect the current state of the board.
@@ -490,20 +497,30 @@ class Board:
             Color.BLACK: {}
         }
 
+        new_mandatory_attacks = {
+            Color.WHITE: False,
+            Color.BLACK: False
+        }
+
         for piece in self.all_white_pieces():
             moves_by_colors[Color.WHITE][piece] = piece.all_possible_legal_moves(self)
+            if not all([not move.attacking for move in moves_by_colors[Color.WHITE][piece]]):
+                new_mandatory_attacks[Color.WHITE] = True
+
         for piece in self.all_black_pieces():
             moves_by_colors[Color.BLACK][piece] = piece.all_possible_legal_moves(self)
+            if not all([not move.attacking for move in moves_by_colors[Color.BLACK][piece]]):
+                new_mandatory_attacks[Color.BLACK] = True
 
-        self.moves_by_colors = moves_by_colors
+        self.mandatory_attacks = new_mandatory_attacks
 
-        if self.player_has_to_attack(Color.WHITE):
+        if self.mandatory_attacks[Color.WHITE]:
             for piece in self.all_white_pieces():
-                moves_by_colors[Color.WHITE][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+                moves_by_colors[Color.WHITE][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.WHITE][piece]))
 
         if self.player_has_to_attack(Color.BLACK):
             for piece in self.all_black_pieces():
-                moves_by_colors[Color.BLACK][piece] = [move for move in piece.all_possible_legal_moves(self) if move.attacking]
+                moves_by_colors[Color.BLACK][piece] = list(filter(lambda x: x.attacking, moves_by_colors[Color.BLACK][piece]))
 
         self.moves_by_colors = moves_by_colors
 

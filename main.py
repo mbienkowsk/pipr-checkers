@@ -8,7 +8,7 @@ from sys import exit
 
 def main():
     '''The main function controlling the flow of the entire experience,
-    starting with the menu, ggoing on through the game and
+    starting with the menu, going on through the game and
     ending at the game over screen. To play, run the file:)'''
     pygame.init()
     game_running = False
@@ -77,6 +77,8 @@ def main():
             if game.moves_without_attacks >= 50 or game.board.is_game_over:
                 game_running = False
                 game_over_screen_active = True
+                if game.moves_without_attacks >= 50:  # FIXME
+                    print('tie')
 
         pygame.display.update()
         clock.tick(MAX_FPS)

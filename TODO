@@ -9,18 +9,20 @@
 - terminal?
 - maybe stick with the time limit?
 
-## FOOKIN TYPE HINTS
-
-## FLAKE
-
 ## MAX_MOVES_WITHOUT_ATTACKS AS A CONSTANT
 
-## player color dictionary to be entirely an attribute of game and to be accessed by a getter and an index?
-
-## MULTIPLE JUMPS POSSIBLE AT THE SAME TIME BUG
+## MULTIPLE JUMPS POSSIBLE AT THE SAME TIME BUG??
 
 ## co z random botem? podzielic sensowniej klasy
 
 ## all the fixmes
 
 ## usunac self.times z bota minimaxowego
+
+## GETTERS AND SETTERS FOR SELECTED PIECE
+
+## merge player_has_to_attack into the attr dict without having to call the function which acts like a getter
+
+## FLAKE
+
+## FOOKIN TYPE HINTS
