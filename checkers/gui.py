@@ -128,7 +128,31 @@ def get_bot_settings_from_the_user(colors):
                     'Accepted depth is a number from 1 to 10    ')
                 if minimax_depth not in [str(num) for num in range(1, 11)]:
                     print('Invalid depth:(')
-            settings.append(MinimaxBot(color, int(minimax_depth)))
+
+            time_limit = None
+            while time_limit not in ('Y', 'N', 'y', 'n'):
+                time_limit = input(
+                    'Would you like to set a time limit for the bot? ' +
+                    'It is advised to set it to around 5-10 seconds ' +
+                    'if the depth is over 7 (Y/N).  ')
+
+                if time_limit not in ('Y', 'N', 'y', 'n'):
+                    print('Invalid input!')
+
+            minimax_time_limit = False
+            if time_limit in ('Y', 'y'):
+                while minimax_time_limit not in [str(num)
+                                                 for num in range(1, 31)]:
+                    minimax_time_limit = input(
+                        'Enter the time limit in seconds (1-30).  ')
+
+                    if minimax_time_limit not in [str(num)
+                                                  for num in range(1, 31)]:
+                        print('Invalid time limit!')
+
+            settings.append(MinimaxBot(color, int(
+                minimax_depth), int(minimax_time_limit)))
+
     if len(colors) == 1:
         print('Good luck!')
     else:

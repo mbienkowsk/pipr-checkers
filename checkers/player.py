@@ -1,9 +1,8 @@
 from random import randint, shuffle
 from checkers.piece_move_board import Piece, Board
 from typing import List
-from checkers.constants import (FIELD_SIZE,
-                                SLEEP_TIME_IN_BVB_GAME, Color)
-from time import sleep, perf_counter
+from checkers.constants import FIELD_SIZE, Color
+from time import time
 
 
 class Player:
@@ -69,10 +68,10 @@ class MinimaxBot(Bot):
     type depth: int in range(1, 11)
     '''
 
-    def __init__(self, color, depth) -> None:
+    def __init__(self, color, depth, time_limit) -> None:
         super().__init__(color, ai=True)
-        self.times = list()
         self._depth = depth
+        self._time_limit = time_limit
 
     def minimax(self, board: 'Board', depth, alpha=float('-inf'),
                 beta=float('inf'), original_move=None):
@@ -86,7 +85,7 @@ class MinimaxBot(Bot):
         original_move: Move or None by default in the first call made
 
         returns:
-        board evaluation: float FIXME
+        board evaluation: int
         best_move/original_move: Move
         '''
         maximizing_player = self.minimizing_or_maximizing(board.turn)
@@ -162,23 +161,41 @@ class MinimaxBot(Bot):
     def make_move(self, board):
         '''
         The method responsible for the entire process of making a move:
-        calculation and mapping the move into the pixel grid of the window
+        calculation and mapping the move into the pixel grid of the window.
         '''
-        start_time = perf_counter()
-        move = self.minimax(board, self.depth,
-                            float('-inf'), float('inf'))[1]
-        piece_click_location = self.map_field_cords_to_pixels(move.old_cords)
-        field_click_location = self.map_field_cords_to_pixels(move.new_cords)
-        stop_time = perf_counter()
-        self.times.append(stop_time - start_time)
-        print(self.average_move_time())
-        if move.attacking:
-            sleep(SLEEP_TIME_IN_BVB_GAME)
-        return piece_click_location, field_click_location
+        if not self.time_limit:
+            current_move = self.minimax(board, self.depth)[1]
 
-    def average_move_time(self):
-        return round(sum(self.times) / len(self.times), 3)
+        else:
+            current_depth = 0
+            current_move = self.minimax(board, 1)[1]
+            start_time = time()
+            time_left = self.time_limit - (time() - start_time)
+
+            while time_left >= 0.3 * self.time_limit:
+                # if the time left is less than 0.3 of the max limit,
+                # increasing the depth would pretty much double current
+                # time spent on the move, so we need to limit it this way
+
+                current_depth += 1
+                if current_depth > self.depth:
+                    break
+                current_move = self.minimax(board, current_depth)[1]
+                time_left = self.time_limit - (time() - start_time)
+
+        piece_click_location = self.map_field_cords_to_pixels(
+            current_move.old_cords)
+        field_click_location = self.map_field_cords_to_pixels(
+            current_move.new_cords)
+
+        return piece_click_location, field_click_location
 
     @property
     def depth(self):
+        '''Getter for the depth attribute'''
         return self._depth
+
+    @property
+    def time_limit(self):
+        '''Getter for the time_limit attribute'''
+        return self._time_limit
