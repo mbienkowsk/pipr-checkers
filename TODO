@@ -1,5 +1,12 @@
 # STUFF TO DO
 
+## tests
+
+- testing eq of pieces messes up their hash, messing up the entire game
+- if we got time:
+    1. test player_possible_moves where a piece is blocked but exists
+    2. tests for the piece moving functions requiring a board import
+
 ## Check whether player_has_to_attack can be simplified during update_possible_moves_by_colors - it would save a ton of time
 
 ## Come up with improvements to the evaluate_position function

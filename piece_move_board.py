@@ -261,6 +261,12 @@ class Piece:
         y_to_draw = y * FIELD_SIZE + 0.5 * FIELD_SIZE
         return (x_to_draw, y_to_draw)
 
+    # def __eq__(self, other) -> bool:  FIXME
+    #     equal_x = self.x == other.x
+    #     equal_y = self.y == other.y
+    #     equal_color = self.color == other.color
+    #     return (equal_x and equal_y and equal_color)
+
     @property
     def value(self):
         '''Getter for the value attribute'''
@@ -305,10 +311,6 @@ class Piece:
     def location(self):
         '''Returns the location of a piece - a tuple of its x and y coordinates'''
         return (self.x, self.y)
-
-    def __str__(self) -> str:
-        # for testing purposes, to delete later FIXME
-        return f'{self.location}: {self.color}'
 
 
 @dataclass(frozen=True)
@@ -367,7 +369,6 @@ class Board:
         self.setup_pieces_by_colors()
         self.moves_by_colors = dict()
         self.update_possible_moves_by_colors()
-        # we'll think of a better way to evaluate a turn in a board for the algorithm, but for now FIXME
         self.turn = Color.WHITE
         self.is_game_over = False
         self._mandatory_attacks = {
@@ -433,18 +434,6 @@ class Board:
     @mandatory_attacks.setter
     def mandatory_attacks(self, new_value):
         self._mandatory_attacks = new_value
-
-    def __str__(self) -> str:
-        #   to delete later, for testing purposes FIXME
-        result = ''
-        for row in self.fields:
-            for field in row:
-                if field.is_taken():
-                    result += str(field.piece)
-                else:
-                    result += str(field)
-            result += '\n'
-        return result
 
     def delete_piece(self, piece):
         '''
