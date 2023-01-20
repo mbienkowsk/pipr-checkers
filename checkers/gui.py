@@ -120,6 +120,7 @@ def get_bot_settings_from_the_user(colors):
                 print('Invalid choice:(')
         if bot_choice in ('R', 'r'):
             settings.append(RandomBot(color))
+            print('\n')
         else:
             minimax_depth = None
             while minimax_depth not in [str(num) for num in range(1, 11)]:
@@ -128,6 +129,7 @@ def get_bot_settings_from_the_user(colors):
                     'Accepted depth is a number from 1 to 10    ')
                 if minimax_depth not in [str(num) for num in range(1, 11)]:
                     print('Invalid depth:(')
+                    print('\n')
 
             time_limit = None
             while time_limit not in ('Y', 'N', 'y', 'n'):
@@ -138,6 +140,7 @@ def get_bot_settings_from_the_user(colors):
 
                 if time_limit not in ('Y', 'N', 'y', 'n'):
                     print('Invalid input!')
+                    print('\n')
 
             minimax_time_limit = False
             if time_limit in ('Y', 'y'):
@@ -149,6 +152,7 @@ def get_bot_settings_from_the_user(colors):
                     if minimax_time_limit not in [str(num)
                                                   for num in range(1, 31)]:
                         print('Invalid time limit!')
+                        print('\n')
 
             settings.append(MinimaxBot(color, int(
                 minimax_depth), int(minimax_time_limit)))

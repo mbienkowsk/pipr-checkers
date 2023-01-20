@@ -658,29 +658,6 @@ class Board:
             sum_of_black_pieces = sum(
                 piece.value for piece in self.all_black_pieces())
             evaluation += (sum_of_white_pieces - sum_of_black_pieces)
-
-            # white_progress_list = [7 - piece.y
-            #                        for piece in self.all_white_pieces()
-            #                        if not piece.king]
-            # if white_progress_list:
-            #     average_progression_white = (
-            #         sum(white_progress_list) / len(white_progress_list))
-            # else:
-            #     average_progression_white = 0
-
-            # black_progression_list = [
-            #     piece.y for piece in self.all_black_pieces()
-            # if not piece.king]
-            # if black_progression_list:
-            #     average_progression_black = sum(
-            #         black_progression_list) / len(black_progression_list)
-            # else:
-            #     average_progression_black = 0
-
-            # evaluation += (average_progression_white -
-            #                average_progression_black)
-
-            #   to adjust later for a more exact evaluation
             return evaluation
 
     def player_has_moving_options(self, color):
